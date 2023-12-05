@@ -31,7 +31,9 @@
 #define SERIAL_EVENT_RX_SHIFT (8)
 
 #define SERIAL_EVENT_TX_MASK (0x00FC)
-#define SERIAL_EVENT_RX_MASK (0x3F00)
+#pragma region reallin_custom
+#define SERIAL_EVENT_RX_MASK (0x7F00)
+#pragma endregion reallin_custom
 
 #define SERIAL_EVENT_ERROR (1 << 1)
 
@@ -55,9 +57,13 @@
 #define SERIAL_EVENT_RX_PARITY_ERROR    (1 << (SERIAL_EVENT_RX_SHIFT + 3))
 #define SERIAL_EVENT_RX_OVERFLOW        (1 << (SERIAL_EVENT_RX_SHIFT + 4))
 #define SERIAL_EVENT_RX_CHARACTER_MATCH (1 << (SERIAL_EVENT_RX_SHIFT + 5))
+#pragma region dzg_custom
+#define SERIAL_EVENT_RX_IDLE			(1 << (SERIAL_EVENT_RX_SHIFT + 6))
 #define SERIAL_EVENT_RX_ALL             (SERIAL_EVENT_RX_OVERFLOW | SERIAL_EVENT_RX_PARITY_ERROR | \
                                          SERIAL_EVENT_RX_FRAMING_ERROR | SERIAL_EVENT_RX_OVERRUN_ERROR | \
-                                         SERIAL_EVENT_RX_COMPLETE | SERIAL_EVENT_RX_CHARACTER_MATCH)
+                                         SERIAL_EVENT_RX_COMPLETE | SERIAL_EVENT_RX_CHARACTER_MATCH | \
+                                         SERIAL_EVENT_RX_IDLE)
+#pragma endregion dzg_custom
 /**@}*/
 
 #define SERIAL_RESERVED_CHAR_MATCH (255)
@@ -450,6 +456,15 @@ void serial_tx_abort_asynch(serial_t *obj);
  * @param obj The serial object
  */
 void serial_rx_abort_asynch(serial_t *obj);
+
+#pragma region dzg_custom
+/** Read the received size
+*
+* @param obj        The serial object
+* @retrun Return The number of bytes has received
+*/
+uint32_t serial_rx_buffer_size_get(serial_t *obj);
+#pragma endregion dzg_custom
 
 /**@}*/
 

@@ -17,6 +17,9 @@
 #include "drivers/TimerEvent.h"
 
 #include <stddef.h>
+#pragma region dzg_custom
+#include "mbed_error.h"
+#pragma endregion dzg_custom
 #include "hal/us_ticker_api.h"
 
 using namespace std::chrono;
@@ -31,6 +34,10 @@ TimerEvent::TimerEvent(const ticker_data_t *data) : event(), _ticker_data(data)
 void TimerEvent::irq(uint32_t id)
 {
     TimerEvent *timer_event = reinterpret_cast<TimerEvent *>(id);
+#pragma region dzg_custom
+	if (timer_event == nullptr)
+		MBED_ERROR(MBED_MAKE_ERROR(MBED_MODULE_APPLICATION, MBED_ERROR_CODE_INVALID_ARGUMENT), "TimerEvent::irq == nullptr");
+#pragma endregion dzg_custom
     timer_event->handler();
 }
 

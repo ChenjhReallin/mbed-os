@@ -35,7 +35,276 @@ static rcu_periph_enum usart_clk[USART_NUM] = {RCU_USART0, RCU_USART1, RCU_USART
 static IRQn_Type usart_irq_n[USART_NUM]     = {USART0_IRQn, USART1_IRQn, USART2_IRQn, UART3_IRQn,
                                                UART4_IRQn, USART5_IRQn, UART6_IRQn, UART7_IRQn
                                               };
+#pragma reagion reallin_custom
+#include "gd32f4xx_dma.h"
+int serial_tx_asynch_dma(serial_t *obj, const void *tx, size_t tx_length, uint8_t tx_width, uint32_t handler, uint32_t event);
+int serial_rx_asynch_dma(serial_t *obj, void *rx, size_t rx_length, uint8_t rx_width, uint32_t handler, uint32_t event, uint8_t char_match);
+static void serial_dma_irq(uint32_t uart_periph, uint8_t index, serial_dma_dir dir);
 
+static serial_dma_handle_t serial_dma_handles[USART_NUM] = {
+    //USART0
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA1,
+            .dma_rcu = RCU_DMA1,
+            .dma_irq = DMA1_Channel7_IRQn,
+            .dma_channel = DMA_CH7,
+            .sub_periph = DMA_SUBPERI4,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA1,
+            .dma_rcu = RCU_DMA1,
+            .dma_irq = DMA1_Channel5_IRQn,
+            .dma_channel = DMA_CH5,
+            .sub_periph = DMA_SUBPERI4,
+        }
+    },
+    //USART1
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel6_IRQn,
+            .dma_channel = DMA_CH6,
+            .sub_periph = DMA_SUBPERI4,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel5_IRQn,
+            .dma_channel = DMA_CH5,
+            .sub_periph = DMA_SUBPERI4,
+        }
+    },
+    //USART2
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel3_IRQn,
+            .dma_channel = DMA_CH3,
+            .sub_periph = DMA_SUBPERI4,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel1_IRQn,
+            .dma_channel = DMA_CH1,
+            .sub_periph = DMA_SUBPERI4,
+        }
+    },
+    //UART3
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel4_IRQn,
+            .dma_channel = DMA_CH4,
+            .sub_periph = DMA_SUBPERI4,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel2_IRQn,
+            .dma_channel = DMA_CH2,
+            .sub_periph = DMA_SUBPERI4,
+        }
+    },
+    //UART4
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel7_IRQn,
+            .dma_channel = DMA_CH7,
+            .sub_periph = DMA_SUBPERI4,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel0_IRQn,
+            .dma_channel = DMA_CH0,
+            .sub_periph = DMA_SUBPERI4,
+        }
+    },
+    //USART5
+    {
+        .tx = {
+            .init_struct = {0},
+            .dma_periph = DMA1,
+            .dma_rcu = RCU_DMA1,
+            .dma_irq = DMA1_Channel6_IRQn,
+            .dma_channel = DMA_CH6,
+            .sub_periph = DMA_SUBPERI5,
+        },
+        .rx = {
+            .init_struct = {0},
+            .dma_periph = DMA1,
+            .dma_rcu = RCU_DMA1,
+            .dma_irq = DMA1_Channel1_IRQn,
+            .dma_channel = DMA_CH1,
+            .sub_periph = DMA_SUBPERI5,
+        }
+    },
+    //UART6
+    {
+        .tx = { // Conflict with UART2 rx
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel1_IRQn,
+            .dma_channel = DMA_CH1,
+            .sub_periph = DMA_SUBPERI5,
+        },
+        .rx = { // Conflict with UART2 tx
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel3_IRQn,
+            .dma_channel = DMA_CH3,
+            .sub_periph = DMA_SUBPERI5,
+        }
+    },
+    //UART7
+    {
+        .tx = { // Conflict with UART4 rx
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel0_IRQn,
+            .dma_channel = DMA_CH0,
+            .sub_periph = DMA_SUBPERI5,
+        },
+        .rx = { // Conflict with UART1 tx
+            .init_struct = {0},
+            .dma_periph = DMA0,
+            .dma_rcu = RCU_DMA0,
+            .dma_irq = DMA0_Channel6_IRQn,
+            .dma_channel = DMA_CH6,
+            .sub_periph = DMA_SUBPERI5,
+        }
+    },
+};
+
+void DMA0_Channel0_IRQHandler(void)
+{
+    serial_dma_irq(UART4, 4, serial_dma_rx);
+    // serial_dma_irq(UART7, serial_dma_tx);
+}
+
+void DMA0_Channel1_IRQHandler(void)
+{
+    serial_dma_irq(USART2, 2, serial_dma_rx);
+    // serial_dma_irq(UART6, serial_dma_tx);
+}
+
+void DMA0_Channel2_IRQHandler(void)
+{
+    serial_dma_irq(UART3, 3, serial_dma_rx);
+}
+
+void DMA0_Channel3_IRQHandler(void)
+{
+    serial_dma_irq(USART2, 2, serial_dma_tx);
+    // serial_dma_irq(UART6, serial_dma_rx);
+}
+
+void DMA0_Channel4_IRQHandler(void)
+{
+    serial_dma_irq(UART3, 3, serial_dma_tx);
+}
+
+void DMA0_Channel5_IRQHandler(void)
+{
+    serial_dma_irq(USART1, 1, serial_dma_rx);
+}
+
+void DMA0_Channel6_IRQHandler(void)
+{
+    serial_dma_irq(USART1, 1, serial_dma_tx);
+    // serial_dma_irq(USART7, serial_dma_rx);
+}
+
+void DMA0_Channel7_IRQHandler(void)
+{
+    serial_dma_irq(UART4, 4, serial_dma_tx);
+}
+
+void DMA1_Channel1_IRQHandler(void)
+{
+    serial_dma_irq(USART5, 5, serial_dma_rx);
+}
+
+void DMA1_Channel5_IRQHandler(void)
+{
+    serial_dma_irq(USART0, 0, serial_dma_rx);
+}
+
+void DMA1_Channel6_IRQHandler(void)
+{
+    serial_dma_irq(USART5, 5, serial_dma_tx);
+}
+
+void DMA1_Channel7_IRQHandler(void)
+{
+    serial_dma_irq(USART0, 0, serial_dma_tx);
+}
+
+void serial_dma_irq(uint32_t uart_periph, uint8_t index, serial_dma_dir dir)
+{
+    dma_handle_t* dma_handle = (dma_handle_t*)(&serial_dma_handles[index]) + dir;
+    uint32_t dma_periph = dma_handle->dma_periph;
+    dma_channel_enum dma_channel = dma_handle->dma_channel;
+
+    if(dma_interrupt_flag_get(dma_periph, dma_channel, DMA_INT_FLAG_FEE))
+    {
+        dma_interrupt_flag_clear(dma_periph, dma_channel, DMA_INT_FLAG_FEE);
+    }
+    if(dma_interrupt_flag_get(dma_periph, dma_channel, DMA_INT_FLAG_SDE))
+    {
+        dma_interrupt_flag_clear(dma_periph, dma_channel, DMA_INT_FLAG_SDE);
+    }
+    if(dma_interrupt_flag_get(dma_periph, dma_channel, DMA_INT_FLAG_TAE))
+    {
+        dma_interrupt_flag_clear(dma_periph, dma_channel, DMA_INT_FLAG_TAE);
+    }
+    if(dma_interrupt_flag_get(dma_periph, dma_channel, DMA_INT_FLAG_HTF))
+    {
+        dma_interrupt_flag_clear(dma_periph, dma_channel, DMA_INT_FLAG_HTF);
+    }
+    if(dma_interrupt_flag_get(dma_periph, dma_channel, DMA_INT_FLAG_FTF))
+    {
+        dma_interrupt_flag_clear(dma_periph, dma_channel, DMA_INT_FLAG_FTF);
+        if(dir == serial_dma_tx)
+        {
+            if(dma_handle->init_struct.circular_mode == DMA_CIRCULAR_MODE_DISABLE)
+            {
+                dma_handle->init_struct.number = 0;
+                usart_dma_transmit_config(uart_periph, USART_DENT_DISABLE);
+                usart_interrupt_enable(uart_periph, USART_INT_TC);
+            }
+        }
+        else // rx
+        {
+            if(dma_handle->init_struct.circular_mode == DMA_CIRCULAR_MODE_DISABLE)
+            {
+                dma_handle->init_struct.number = 0;
+                usart_dma_receive_config(uart_periph, USART_DENR_DISABLE);
+            }
+        }
+    }
+}
+#pragma endreagion reallin_custom
 static uart_irq_handler irq_handler;
 
 int stdio_uart_inited = 0;
@@ -126,6 +395,10 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         p_obj->index = 7;
         rcu_periph_clock_enable(usart_clk[p_obj->index]);
     }
+
+#pragma reagion reallin_custom
+    p_obj->dma_handle = &serial_dma_handles[p_obj->index];
+#pragma endreagion reallin_custom
 
     /* configurte the pins */
     pinmap_pinout(tx, PinMap_UART_TX);
@@ -686,6 +959,13 @@ int serial_tx_asynch(serial_t *obj, const void *tx, size_t tx_length, uint8_t tx
         /* some transmit is in progress */
         return 0;
     }
+#pragma region reallin_custom
+    p_obj->tx_hint = hint;
+    if(hint != DMA_USAGE_NEVER)
+    {
+        return serial_tx_asynch_dma(obj, tx, tx_length, tx_width, handler, event); 
+    }
+#pragma endregion reallin_custom
 
     obj->tx_buff.buffer = (void *)tx;
     obj->tx_buff.length = tx_length;
@@ -736,17 +1016,26 @@ void serial_rx_asynch(serial_t *obj, void *rx, size_t rx_length, uint8_t rx_widt
         return;
     }
 
+    if (serial_rx_active(obj)) {
+        /* some reception is in progress */
+        return;
+    }
+
+#pragma region reallin_custom
+    p_obj->rx_hint = hint;
+    if(hint != DMA_USAGE_NEVER)
+    {
+        serial_rx_asynch_dma(obj, rx, rx_length, rx_width, handler, event, char_match);
+        return;
+    }
+#pragma endregion reallin_custom
+
     /* disable all events first */
     serial_event_disable(obj, SERIAL_EVENT_RX_ALL);
     /* enable the specific event */
     serial_event_enable(obj, event);
 
     obj->char_match = char_match;
-
-    if (serial_rx_active(obj)) {
-        /* some reception is in progress */
-        return;
-    }
 
     obj->rx_buff.buffer = rx;
     obj->rx_buff.length = rx_length;
@@ -926,10 +1215,62 @@ void usart_irq_handler(struct serial_s *obj_s)
             if (usart_interrupt_flag_get(obj_s->uart, USART_INT_FLAG_RBNE) != RESET) {
                 usart_rx_interrupt(obj_s);
             }
+#pragma reagion reallin_custom
+            if((obj_s->rx_hint != DMA_USAGE_NEVER) || (obj_s->error_code & USART_ERROR_CODE_ORERR))
+            {
+                usart_interrupt_disable(obj_s->uart, USART_INT_RBNE);
+                usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
+                usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
+                usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
+                usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                obj_s->rx_state = OP_STATE_READY;
+            }
+#pragma endreagion reallin_custom
         }
 
         return;
     }
+
+#pragma reagion reallin_custom
+    if (usart_interrupt_flag_get(obj_s->uart, USART_INT_FLAG_IDLE) != RESET)
+    {
+        usart_interrupt_flag_clear(obj_s->uart, USART_INT_FLAG_IDLE);
+        if((USART_CTL0(obj_s->uart) & USART_RECEIVE_ENABLE) == USART_RECEIVE_ENABLE)
+        {
+            dma_handle_t *dma_handle = &obj_s->dma_handle->rx;
+            uint16_t remaining_rx_size = (uint16_t)dma_transfer_number_get(dma_handle->dma_periph, dma_handle->dma_channel);
+            if((remaining_rx_size > 0) && (remaining_rx_size < obj_s->rx_size))
+            {
+                obj_s->rx_count = remaining_rx_size;
+
+                if(dma_handle->init_struct.circular_mode != DMA_CIRCULAR_MODE_ENABLE)
+                {
+                    usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
+                    usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
+                    usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
+                    usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                    dma_interrupt_disable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXFCTL_FEEIE);
+                    dma_interrupt_disable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXCTL_SDEIE | DMA_CHXCTL_TAEIE | DMA_CHXCTL_HTFIE | DMA_CHXCTL_FTFIE);
+                    dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
+                    obj_s->rx_state = OP_STATE_READY;
+                }
+            }
+        }
+        else
+        {
+            uint16_t rx_data = obj_s->rx_size - obj_s->rx_count;
+            if((rx_data > 0) && (rx_data < obj_s->rx_size))
+            {
+                usart_interrupt_disable(obj_s->uart, USART_INT_RBNE);
+                usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
+                usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
+                usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
+                usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                obj_s->rx_state = OP_STATE_READY;
+            }
+        }
+    }
+#pragma endreagion reallin_custom
 
     if (usart_interrupt_flag_get(obj_s->uart, USART_INT_FLAG_TBE) != RESET) {
         usart_tx_interrupt(obj_s);
@@ -983,24 +1324,37 @@ int serial_irq_handler_asynch(serial_t *obj)
         }
     }
 
+#pragma region reallin_custom
+    if (usart_interrupt_flag_get(p_obj->uart, USART_INT_FLAG_IDLE) != RESET) {
+        if((p_obj->events & SERIAL_EVENT_RX_IDLE) != 0) {
+            return_val |= (SERIAL_EVENT_RX_IDLE & p_obj->events);
+        }
+    }
+#pragma endregion reallin_custom
+
     usart_irq_handler(p_obj);
 
-    if (p_obj->rx_size != 0) {
-        obj->rx_buff.pos = p_obj->rx_size - p_obj->rx_count;
-    }
+#pragma region reallin_custom
+    if(p_obj->rx_hint == DMA_USAGE_NEVER)
+#pragma endregion reallin_custom
+    {
+        if (p_obj->rx_size != 0) {
+            obj->rx_buff.pos = p_obj->rx_size - p_obj->rx_count;
+        }
 
-    if ((p_obj->rx_count == 0) && (obj->rx_buff.pos >= (obj->rx_buff.length - 1))) {
-        return_val |= (SERIAL_EVENT_RX_COMPLETE & p_obj->events);
-    }
+        if ((p_obj->rx_count == 0) && (obj->rx_buff.pos >= (obj->rx_buff.length - 1))) {
+            return_val |= (SERIAL_EVENT_RX_COMPLETE & p_obj->events);
+        }
 
-    if (p_obj->events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
-        if (p_buf != NULL) {
-            for (i = 0; i < obj->rx_buff.pos; i++) {
-                if (p_buf[i] == obj->char_match) {
-                    obj->rx_buff.pos = i;
-                    return_val |= (SERIAL_EVENT_RX_CHARACTER_MATCH & p_obj->events);
-                    serial_rx_abort_asynch(obj);
-                    break;
+        if (p_obj->events & SERIAL_EVENT_RX_CHARACTER_MATCH) {
+            if (p_buf != NULL) {
+                for (i = 0; i < obj->rx_buff.pos; i++) {
+                    if (p_buf[i] == obj->char_match) {
+                        obj->rx_buff.pos = i;
+                        return_val |= (SERIAL_EVENT_RX_CHARACTER_MATCH & p_obj->events);
+                        serial_rx_abort_asynch(obj);
+                        break;
+                    }
                 }
             }
         }
@@ -1020,6 +1374,14 @@ void serial_tx_abort_asynch(serial_t *obj)
 
     usart_interrupt_disable(p_obj->uart, USART_INT_TC);
     usart_interrupt_disable(p_obj->uart, USART_INT_TBE);
+#pragma region reallin_custom
+    if(p_obj->tx_hint != DMA_USAGE_NEVER)
+    {
+        dma_handle_t* dma_handle = &p_obj->dma_handle->tx;
+        usart_dma_transmit_config(p_obj->uart, USART_DENT_DISABLE);
+        dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
+    }
+#pragma endregion reallin_custom
 
     usart_flag_clear(p_obj->uart, USART_FLAG_TC);
 
@@ -1040,6 +1402,16 @@ void serial_rx_abort_asynch(serial_t *obj)
     usart_interrupt_disable(p_obj->uart, USART_INT_RBNE);
     usart_interrupt_disable(p_obj->uart, USART_INT_PERR);
     usart_interrupt_disable(p_obj->uart, USART_INT_ERR);
+
+#pragma region reallin_custom
+    if(p_obj->rx_hint != DMA_USAGE_NEVER)
+    {
+        dma_handle_t* dma_handle = &p_obj->dma_handle->rx;
+        usart_interrupt_disable(p_obj->uart, USART_INT_IDLE);
+        usart_dma_receive_config(p_obj->uart, USART_DENR_DISABLE);
+        dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
+    }
+#pragma endregion reallin_custom
 
     /* clear USART_FLAG_RBNE flag */
     usart_flag_clear(p_obj->uart, USART_FLAG_RBNE);
@@ -1188,5 +1560,196 @@ int serial_busy_state_check(void)
     return 0;
 }
 #endif /* DEVICE_SLEEP */
+
+#pragma region reallin_custom
+uint32_t serial_rx_buffer_size_get(serial_t *obj)
+{
+    struct serial_s *p_obj = GET_SERIAL_S(obj);
+
+    if(p_obj->rx_hint != DMA_USAGE_NEVER)
+    {
+		return obj->rx_buff.length - dma_transfer_number_get(p_obj->dma_handle->rx.dma_periph, p_obj->dma_handle->rx.dma_channel);
+    }
+    else
+    {
+	    return obj->rx_buff.pos;
+    }
+}
+
+/**
+ * Begin asynchronous DMA TX transfer. The used buffer is specified in the serial
+ * object, tx_buff
+ *
+ * @param obj       The serial object
+ * @param tx        The buffer for sending
+ * @param tx_length The number of words to transmit
+ * @param tx_width  The bit width of buffer word
+ * @param handler   The serial handler
+ * @param event     The logical OR of events to be registered
+ * @return Returns number of data transfered, or 0 otherwise
+ */
+int serial_tx_asynch_dma(serial_t *obj, const void *tx, size_t tx_length, uint8_t tx_width, uint32_t handler, uint32_t event)
+{
+	struct serial_s *obj_s = GET_SERIAL_S(obj);
+    dma_handle_t* dma_handle = &obj_s->dma_handle->tx;
+    
+    if((dma_handle->dma_periph != DMA0) && (dma_handle->dma_periph != DMA1))
+    {
+        return GD_ERROR;
+    }
+    
+    if (obj_s->tx_state == OP_STATE_READY) {
+        if ((tx == NULL) || (tx_length == 0U)) {
+            return GD_ERROR;
+        }
+    } else {
+        return GD_BUSY;
+    }
+
+    rcu_periph_clock_enable(dma_handle->dma_rcu);
+    memset(&dma_handle->init_struct, 0, sizeof(dma_single_data_parameter_struct));
+    dma_handle->init_struct.periph_addr = (uint32_t)&USART_DATA(obj_s->uart);
+    dma_handle->init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
+    dma_handle->init_struct.memory0_addr = (uint32_t)tx;
+    dma_handle->init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+    dma_handle->init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
+    dma_handle->init_struct.circular_mode = DMA_CIRCULAR_MODE_DISABLE;
+    dma_handle->init_struct.direction = DMA_MEMORY_TO_PERIPH;
+    dma_handle->init_struct.number = tx_length;
+    dma_handle->init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+
+    dma_deinit(dma_handle->dma_periph, dma_handle->dma_channel);
+    dma_channel_subperipheral_select(dma_handle->dma_periph, dma_handle->dma_channel, dma_handle->sub_periph);
+    dma_single_data_mode_init(dma_handle->dma_periph, dma_handle->dma_channel, &dma_handle->init_struct);
+    
+    obj->tx_buff.buffer = (void *)tx;
+    obj->tx_buff.length = tx_length;
+    obj->tx_buff.pos = 0;
+
+    /* disable all events first */
+    serial_event_disable(obj, SERIAL_EVENT_TX_ALL);
+    /* enable the specific event */
+    serial_event_enable(obj, event);
+
+
+    obj_s->tx_buffer_ptr = (uint8_t *)tx;
+    obj_s->tx_count = tx_length;
+    obj_s->error_code = USART_ERROR_CODE_NONE;
+    obj_s->tx_state = OP_STATE_BUSY_TX;
+    
+    usart_interrupt_flag_clear(obj_s->uart, USART_INT_FLAG_TC);
+    dma_interrupt_enable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXCTL_SDEIE | DMA_CHXCTL_TAEIE | DMA_CHXCTL_FTFIE);
+    dma_channel_enable(dma_handle->dma_periph, dma_handle->dma_channel);
+
+    usart_dma_transmit_config(obj_s->uart, USART_DENT_ENABLE);
+
+    // Enable DMA interrupt
+    NVIC_ClearPendingIRQ(dma_handle->dma_irq);
+    NVIC_DisableIRQ(dma_handle->dma_irq);
+    NVIC_SetPriority(dma_handle->dma_irq, 1);
+    NVIC_EnableIRQ(dma_handle->dma_irq);
+    
+    // Enable UART interrupt
+	{
+        IRQn_Type irq_n = usart_irq_n[obj_s->index];
+		NVIC_ClearPendingIRQ(irq_n);
+		NVIC_DisableIRQ(irq_n);
+		NVIC_SetPriority(irq_n, 1);
+		NVIC_SetVector(irq_n, (uint32_t)handler);
+		NVIC_EnableIRQ(irq_n);
+	}
+    
+    return GD_OK;
+}
+
+/**
+ * Begin asynchronous DMA RX transfer (enable interrupt for data collecting)
+ * The used buffer is specified in the serial object, rx_buff
+ *
+ * @param obj        The serial object
+ * @param rx         The buffer for sending
+ * @param rx_length  The number of words to transmit
+ * @param rx_width   The bit width of buffer word
+ * @param handler    The serial handler
+ * @param event      The logical OR of events to be registered
+ * @param handler    The serial handler
+ * @param char_match A character in range 0-254 to be matched
+ */
+int serial_rx_asynch_dma(serial_t *obj, void *rx, size_t rx_length, uint8_t rx_width, uint32_t handler, uint32_t event, uint8_t char_match)
+{
+	struct serial_s *obj_s = GET_SERIAL_S(obj);
+    dma_handle_t* dma_handle = &obj_s->dma_handle->rx;
+
+    if((dma_handle->dma_periph != DMA0) && (dma_handle->dma_periph != DMA1))
+    {
+        return GD_ERROR;
+    }
+    
+    if (obj_s->rx_state == OP_STATE_READY) {
+        if ((rx == NULL) || (rx_length == 0U)) {
+            return GD_ERROR;
+        }
+    } else {
+        return GD_BUSY;
+    }
+
+    rcu_periph_clock_enable(dma_handle->dma_rcu);
+    memset(&dma_handle->init_struct, 0, sizeof(dma_single_data_parameter_struct));
+    dma_handle->init_struct.periph_addr = (uint32_t)&USART_DATA(obj_s->uart);
+    dma_handle->init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
+    dma_handle->init_struct.memory0_addr = (uint32_t)rx;
+    dma_handle->init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+    dma_handle->init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
+    dma_handle->init_struct.circular_mode = DMA_CIRCULAR_MODE_DISABLE;
+    dma_handle->init_struct.direction = DMA_PERIPH_TO_MEMORY;
+    dma_handle->init_struct.number = rx_length;
+    dma_handle->init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+
+    dma_deinit(dma_handle->dma_periph, dma_handle->dma_channel);
+    dma_channel_subperipheral_select(dma_handle->dma_periph, dma_handle->dma_channel, dma_handle->sub_periph);
+    dma_single_data_mode_init(dma_handle->dma_periph, dma_handle->dma_channel, &dma_handle->init_struct);
+
+	//Set up events
+	serial_event_disable(obj, SERIAL_EVENT_RX_ALL);     // Clear alle events
+	serial_event_enable(obj, event);                    // Set only the wanted events
+
+	// set CharMatch
+	obj->char_match = char_match;
+
+    obj->rx_buff.buffer = rx;
+    obj->rx_buff.length = rx_length;
+    obj->rx_buff.pos = 0;
+
+    obj_s->rx_buffer_ptr = (uint8_t*)rx;
+    obj_s->rx_size       = rx_length;
+    obj_s->rx_count      = rx_length;
+    obj_s->error_code    = USART_ERROR_CODE_NONE;
+    obj_s->rx_state      = OP_STATE_BUSY_RX;
+
+    dma_interrupt_enable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXCTL_SDEIE | DMA_CHXCTL_TAEIE | DMA_CHXCTL_FTFIE);
+    dma_channel_enable(dma_handle->dma_periph, dma_handle->dma_channel);
+    usart_interrupt_enable(obj_s->uart, USART_INT_PERR);    
+    usart_interrupt_enable(obj_s->uart, USART_INT_ERR);
+    usart_interrupt_enable(obj_s->uart, USART_INT_IDLE);
+    usart_dma_receive_config(obj_s->uart, USART_DENR_ENABLE);
+
+    // Enable DMA interrupt
+    NVIC_ClearPendingIRQ(dma_handle->dma_irq);
+    NVIC_DisableIRQ(dma_handle->dma_irq);
+    NVIC_SetPriority(dma_handle->dma_irq, 1);
+    NVIC_EnableIRQ(dma_handle->dma_irq);
+    
+    // Enable UART interrupt
+	{
+        IRQn_Type irq_n = usart_irq_n[obj_s->index];
+		NVIC_ClearPendingIRQ(irq_n);
+		NVIC_DisableIRQ(irq_n);
+		NVIC_SetPriority(irq_n, 1);
+		NVIC_SetVector(irq_n, (uint32_t)handler);
+		NVIC_EnableIRQ(irq_n);
+	}
+    return GD_OK;
+}
+#pragma endregion reallin_custom
 
 #endif /* DEVICE_SERIAL */

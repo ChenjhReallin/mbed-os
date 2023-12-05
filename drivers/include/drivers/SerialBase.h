@@ -273,6 +273,10 @@ public:
      */
     int set_dma_usage_rx(DMAUsage usage);
 
+#pragma region dzg_custom
+	size_t available(void);
+#pragma endregion dzg_custom
+
 #if !defined(DOXYGEN_ONLY)
 protected:
     void start_read(void *buffer, int buffer_size, char buffer_width, const event_callback_t &callback, int event, unsigned char char_match);

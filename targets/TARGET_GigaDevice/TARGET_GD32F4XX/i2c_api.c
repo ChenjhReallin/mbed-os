@@ -135,10 +135,12 @@ void i2c_frequency(i2c_t *obj, int hz)
 {
     int timeout;
     struct i2c_s *obj_s = I2C_S(obj);
-
+#pragma reagion reallin_custom
+    obj_s->freq = hz;
     /* wait until I2C_FLAG_I2CBSY flag is reset */
     timeout = BUSY_TIMEOUT;
-    while ((i2c_flag_get(obj_s->i2c, I2C_FLAG_I2CBSY)) && (--timeout != 0));
+    while ((i2c_flag_get(obj_s->i2c, I2C_FLAG_I2CBSY)) && (--timeout > 0));
+#pragma endreagion reallin_custom
 
     /* reset to clear pending flags */
     i2c_hw_reset(obj);
@@ -269,13 +271,19 @@ int i2c_byte_write(i2c_t *obj, int data)
 
     /* wait until the byte is transmitted */
     timeout = FLAG_TIMEOUT;
+#pragma reagion reallin_custom
     while (((i2c_flag_get(obj_s->i2c, I2C_FLAG_TBE)) == RESET) &&
-            ((i2c_flag_get(obj_s->i2c, I2C_FLAG_BTC)) == RESET)) {
+            ((i2c_flag_get(obj_s->i2c, I2C_FLAG_BTC)) == RESET) &&
+            ((i2c_flag_get(obj_s->i2c, I2C_FLAG_ADDSEND) == RESET))) {
         if ((timeout--) == 0) {
             return 2;
         }
     }
-
+    if(i2c_flag_get(obj_s->i2c, I2C_FLAG_ADDSEND) != RESET)
+    {
+        i2c_flag_clear(obj_s->i2c, I2C_FLAG_ADDSEND);
+    }
+#pragma endreagion reallin_custom
     return 1;
 }
 

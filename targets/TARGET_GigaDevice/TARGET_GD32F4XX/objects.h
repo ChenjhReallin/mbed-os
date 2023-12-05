@@ -77,6 +77,30 @@ struct pwmout_s {
     uint8_t ch;
 };
 
+#pragma reagion reallin_custom
+#include "gd32f4xx_dma.h"
+typedef struct
+{
+    dma_single_data_parameter_struct init_struct;
+    uint32_t dma_periph;
+    rcu_periph_enum dma_rcu;
+    IRQn_Type dma_irq;
+    dma_channel_enum dma_channel;
+    dma_subperipheral_enum sub_periph;
+}dma_handle_t;
+typedef struct
+{
+    dma_handle_t tx;
+    dma_handle_t rx;
+}serial_dma_handle_t;
+
+typedef enum
+{
+    serial_dma_tx = 0,
+    serial_dma_rx = 1,
+}serial_dma_dir;
+#pragma endreagion reallin_custom
+
 struct serial_s {
     /* basic information */
     UARTName uart;
@@ -109,6 +133,11 @@ struct serial_s {
     PinName pin_rts;
     PinName pin_cts;
 #endif
+#pragma reagion reallin_custom
+    serial_dma_handle_t* dma_handle;
+    uint8_t tx_hint;
+    uint8_t rx_hint;
+#pragma endreagion reallin_custom
 };
 
 struct spi_s {

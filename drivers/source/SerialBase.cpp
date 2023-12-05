@@ -466,12 +466,16 @@ void SerialBase::interrupt_handler_asynch(void)
 
     if (_rx_asynch_set && rx_event) {
         event_callback_t cb = _rx_callback;
-        _rx_asynch_set = false;
-        _rx_callback = nullptr;
+#pragma region dzg_custom
+//        _rx_asynch_set = false;
+//        _rx_callback = nullptr;
+#pragma endregion dzg_custom
         if (cb) {
             cb.call(rx_event);
         }
-        sleep_manager_unlock_deep_sleep();
+#pragma region dzg_custom
+//        sleep_manager_unlock_deep_sleep();
+#pragma endregion dzg_custom
     }
 
     int tx_event = event & SERIAL_EVENT_TX_MASK;
@@ -485,6 +489,13 @@ void SerialBase::interrupt_handler_asynch(void)
         sleep_manager_unlock_deep_sleep();
     }
 }
+
+#pragma region dzg_custom
+size_t SerialBase::available()
+{
+	return serial_rx_buffer_size_get(&_serial);
+}
+#pragma endregion dzg_custom
 
 #endif
 

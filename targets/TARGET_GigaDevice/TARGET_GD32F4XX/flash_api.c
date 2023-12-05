@@ -22,14 +22,29 @@
 #if DEVICE_FLASH
 #include "cmsis.h"
 
+#pragma region reallin_custom
+#if defined(GD32F450ZI)
 #define FLASH_SIZE                (0x00200000U)
 #define FLASH_START_ADDR          (0x08000000U)
 #define FLASH_END_ADDR            (0x081FFFFFU)
 #define FLASH_BANK0_START_ADDR    (0x08000000U)
 #define FLASH_BANK1_START_ADDR    (0x08100000U)
+#elif defined(GD32F425RE)
+#define FLASH_SIZE                (0x00080000U)
+#define FLASH_START_ADDR          (0x08000000U)
+#define FLASH_END_ADDR            (0x0807FFFFU)
+#define FLASH_BANK0_START_ADDR    (0x08000000U)
+#else
+#error "None Corresponding device model!"
+#endif
+#pragma endregion reallin_custom
+
 #define SIZE_16KB                 (0x00004000U)
 #define SIZE_64KB                 (0x00010000U)
 #define SIZE_128KB                (0x00020000U)
+#pragma region reallin_custom
+#define SIZE_256KB                (0x00040000U)
+#pragma endregion reallin_custom
 #define WRONG_SECTOR_NUM          (0xFFFFFFFFU)
 #define WORD_SIZE                 (4U)
 
@@ -47,7 +62,15 @@ static sector_t flash_sector_info_get(uint32_t addr)
 {
     sector_t sector_info;
     uint32_t temp = 0x00000000;
-    if ((FLASH_BANK0_START_ADDR <= addr) && (FLASH_BANK1_START_ADDR > addr)) {
+#pragma region reallin_custom
+    if ((FLASH_BANK0_START_ADDR <= addr)
+#ifdef FLASH_BANK1_START_ADDR
+         && (FLASH_BANK1_START_ADDR > addr)
+#else
+         && (FLASH_END_ADDR >= addr)
+#endif
+    ) {
+#pragma endregion reallin_custom
         temp = (addr - FLASH_BANK0_START_ADDR) / SIZE_16KB;
         if (4U > temp) {
             sector_info.sector_num = temp;
@@ -60,7 +83,10 @@ static sector_t flash_sector_info_get(uint32_t addr)
             sector_info.sector_num = temp + 4U;
             sector_info.sector_size = SIZE_128KB;
         }
-    } else if ((FLASH_BANK1_START_ADDR <= addr) && (FLASH_END_ADDR >= addr)) {
+    }
+#pragma region reallin_custom
+#ifdef FLASH_BANK1_START_ADDR
+    else if ((FLASH_BANK1_START_ADDR <= addr) && (FLASH_END_ADDR >= addr)) {
         temp = (addr - FLASH_BANK1_START_ADDR) / SIZE_16KB;
         if (4U > temp) {
             sector_info.sector_num = temp + 12U;
@@ -68,12 +94,19 @@ static sector_t flash_sector_info_get(uint32_t addr)
         } else if (8U > temp) {
             sector_info.sector_num = 16U;
             sector_info.sector_size = SIZE_64KB;
-        } else {
+        } else if (64U > temp){
             temp = (addr - FLASH_BANK1_START_ADDR) / SIZE_128KB;
             sector_info.sector_num = temp + 16U;
             sector_info.sector_size = SIZE_128KB;
+        } else {
+            temp = (addr - FLASH_BANK1_START_ADDR) / SIZE_256KB;
+            sector_info.sector_num = temp + 20U;
+            sector_info.sector_size = SIZE_256KB;
         }
-    } else {
+    }
+#endif
+#pragma endregion reallin_custom 
+    else {
         sector_info.sector_num = WRONG_SECTOR_NUM;
         sector_info.sector_size = MBED_FLASH_INVALID_SIZE;
     }
