@@ -290,7 +290,7 @@ void serial_dma_irq(uint32_t uart_periph, uint8_t index, serial_dma_dir dir)
             if(dma_handle->init_struct.circular_mode == DMA_CIRCULAR_MODE_DISABLE)
             {
                 dma_handle->init_struct.number = 0;
-                usart_dma_transmit_config(uart_periph, USART_DENT_DISABLE);
+                usart_dma_transmit_config(uart_periph, USART_TRANSMIT_DMA_DISABLE);
                 usart_interrupt_enable(uart_periph, USART_INT_TC);
             }
         }
@@ -299,7 +299,7 @@ void serial_dma_irq(uint32_t uart_periph, uint8_t index, serial_dma_dir dir)
             if(dma_handle->init_struct.circular_mode == DMA_CIRCULAR_MODE_DISABLE)
             {
                 dma_handle->init_struct.number = 0;
-                usart_dma_receive_config(uart_periph, USART_DENR_DISABLE);
+                usart_dma_receive_config(uart_periph, USART_RECEIVE_DMA_DISABLE);
             }
         }
     }
@@ -1222,7 +1222,7 @@ void usart_irq_handler(struct serial_s *obj_s)
                 usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
                 usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
                 usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
-                usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                usart_dma_receive_config(obj_s->uart, USART_RECEIVE_DMA_DISABLE);
                 obj_s->rx_state = OP_STATE_READY;
             }
 #pragma endreagion reallin_custom
@@ -1248,7 +1248,7 @@ void usart_irq_handler(struct serial_s *obj_s)
                     usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
                     usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
                     usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
-                    usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                    usart_dma_receive_config(obj_s->uart, USART_RECEIVE_DMA_DISABLE);
                     dma_interrupt_disable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXFCTL_FEEIE);
                     dma_interrupt_disable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXCTL_SDEIE | DMA_CHXCTL_TAEIE | DMA_CHXCTL_HTFIE | DMA_CHXCTL_FTFIE);
                     dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
@@ -1265,7 +1265,7 @@ void usart_irq_handler(struct serial_s *obj_s)
                 usart_interrupt_disable(obj_s->uart, USART_INT_PERR);
                 usart_interrupt_disable(obj_s->uart, USART_INT_ERR);
                 usart_interrupt_disable(obj_s->uart, USART_INT_IDLE);
-                usart_dma_receive_config(obj_s->uart, USART_DENR_DISABLE);
+                usart_dma_receive_config(obj_s->uart, USART_RECEIVE_DMA_DISABLE);
                 obj_s->rx_state = OP_STATE_READY;
             }
         }
@@ -1378,7 +1378,7 @@ void serial_tx_abort_asynch(serial_t *obj)
     if(p_obj->tx_hint != DMA_USAGE_NEVER)
     {
         dma_handle_t* dma_handle = &p_obj->dma_handle->tx;
-        usart_dma_transmit_config(p_obj->uart, USART_DENT_DISABLE);
+        usart_dma_transmit_config(p_obj->uart, USART_TRANSMIT_DMA_DISABLE);
         dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
     }
 #pragma endregion reallin_custom
@@ -1408,7 +1408,7 @@ void serial_rx_abort_asynch(serial_t *obj)
     {
         dma_handle_t* dma_handle = &p_obj->dma_handle->rx;
         usart_interrupt_disable(p_obj->uart, USART_INT_IDLE);
-        usart_dma_receive_config(p_obj->uart, USART_DENR_DISABLE);
+        usart_dma_receive_config(p_obj->uart, USART_RECEIVE_DMA_DISABLE);
         dma_channel_disable(dma_handle->dma_periph, dma_handle->dma_channel);
     }
 #pragma endregion reallin_custom
@@ -1641,7 +1641,7 @@ int serial_tx_asynch_dma(serial_t *obj, const void *tx, size_t tx_length, uint8_
     dma_interrupt_enable(dma_handle->dma_periph, dma_handle->dma_channel, DMA_CHXCTL_SDEIE | DMA_CHXCTL_TAEIE | DMA_CHXCTL_FTFIE);
     dma_channel_enable(dma_handle->dma_periph, dma_handle->dma_channel);
 
-    usart_dma_transmit_config(obj_s->uart, USART_DENT_ENABLE);
+    usart_dma_transmit_config(obj_s->uart, USART_TRANSMIT_DMA_ENABLE);
 
     // Enable DMA interrupt
     NVIC_ClearPendingIRQ(dma_handle->dma_irq);
@@ -1731,7 +1731,7 @@ int serial_rx_asynch_dma(serial_t *obj, void *rx, size_t rx_length, uint8_t rx_w
     usart_interrupt_enable(obj_s->uart, USART_INT_PERR);    
     usart_interrupt_enable(obj_s->uart, USART_INT_ERR);
     usart_interrupt_enable(obj_s->uart, USART_INT_IDLE);
-    usart_dma_receive_config(obj_s->uart, USART_DENR_ENABLE);
+    usart_dma_receive_config(obj_s->uart, USART_RECEIVE_DMA_ENABLE);
 
     // Enable DMA interrupt
     NVIC_ClearPendingIRQ(dma_handle->dma_irq);

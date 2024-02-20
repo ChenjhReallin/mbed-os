@@ -1,38 +1,34 @@
 /*!
-    \file  gd32f4xx_rtc.c
-    \brief definitions for the RTC
+    \file    gd32f4xx_rtc.c
+    \brief   definitions for the RTC
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without modification,
+    Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, this
+    1. Redistributions of source code must retain the above copyright notice, this 
        list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
        and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors
-       may be used to endorse or promote products derived from this software without
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
        specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
 OF SUCH DAMAGE.
 */
 
@@ -233,7 +229,8 @@ OF SUCH DAMAGE.
 
 /* constants definitions */
 /* structure for initialization of the RTC */
-typedef struct {
+typedef struct
+{
     uint8_t year;                                                               /*!< RTC year value: 0x0 - 0x99(BCD format) */
     uint8_t month;                                                              /*!< RTC month value */
     uint8_t date;                                                               /*!< RTC date value: 0x1 - 0x31(BCD format) */
@@ -245,10 +242,11 @@ typedef struct {
     uint16_t factor_syn;                                                        /*!< RTC synchronous prescaler value: 0x0 - 0x7FFF */
     uint32_t am_pm;                                                             /*!< RTC AM/PM value */
     uint32_t display_format;                                                    /*!< RTC time notation */
-} rtc_parameter_struct;
+}rtc_parameter_struct;
 
 /* structure for RTC alarm configuration */
-typedef struct {
+typedef struct
+{
     uint32_t alarm_mask;                                                        /*!< RTC alarm mask */
     uint32_t weekday_or_date;                                                   /*!< specify RTC alarm is on date or weekday */
     uint8_t alarm_day;                                                          /*!< RTC alarm date or weekday value*/
@@ -256,10 +254,11 @@ typedef struct {
     uint8_t alarm_minute;                                                       /*!< RTC alarm minute value: 0x0 - 0x59(BCD format) */
     uint8_t alarm_second;                                                       /*!< RTC alarm second value: 0x0 - 0x59(BCD format) */
     uint32_t am_pm;                                                             /*!< RTC alarm AM/PM value */
-} rtc_alarm_struct;
+}rtc_alarm_struct;
 
 /* structure for RTC time-stamp configuration */
-typedef struct {
+typedef struct
+{
     uint8_t timestamp_month;                                                    /*!< RTC time-stamp month value */
     uint8_t timestamp_date;                                                     /*!< RTC time-stamp date value: 0x1 - 0x31(BCD format) */
     uint8_t timestamp_day;                                                      /*!< RTC time-stamp weekday value */
@@ -267,10 +266,11 @@ typedef struct {
     uint8_t timestamp_minute;                                                   /*!< RTC time-stamp minute value: 0x0 - 0x59(BCD format) */
     uint8_t timestamp_second;                                                   /*!< RTC time-stamp second value: 0x0 - 0x59(BCD format) */
     uint32_t am_pm;                                                             /*!< RTC time-stamp AM/PM value */
-} rtc_timestamp_struct;
+}rtc_timestamp_struct;
 
 /* structure for RTC tamper configuration */
-typedef struct {
+typedef struct
+{
     uint32_t tamper_source;                                                     /*!< RTC tamper source */
     uint32_t tamper_trigger;                                                    /*!< RTC tamper trigger */
     uint32_t tamper_filter;                                                     /*!< RTC tamper consecutive samples needed during a voltage level detection */
@@ -278,7 +278,7 @@ typedef struct {
     ControlStatus tamper_precharge_enable;                                      /*!< RTC tamper precharge feature during a voltage level detection */
     uint32_t tamper_precharge_time;                                             /*!< RTC tamper precharge duration if precharge feature is enabled */
     ControlStatus tamper_with_timestamp;                                        /*!< RTC tamper time-stamp feature */
-} rtc_tamper_struct;
+}rtc_tamper_struct; 
 
 /* time register value */
 #define TIME_SC(regval)                    (BITS(0,6) & ((uint32_t)(regval) << 0))    /*!< write value to RTC_TIME_SC bit field */
@@ -499,12 +499,12 @@ typedef struct {
 #define RTC_WUT_RESET                      ((uint32_t)0x0000FFFFU)                    /*!< RTC_WUT register reset value */
 
 /* RTC alarm */
-#define RTC_ALARM0                         ((uint8_t)0x01U)                           /*!< RTC alarm 0 */
-#define RTC_ALARM1                         ((uint8_t)0x02U)                           /*!< RTC alarm 1 */
+#define RTC_ALARM0                         ((uint8_t)0x01U)                           /*!< RTC alarm 0 */              
+#define RTC_ALARM1                         ((uint8_t)0x02U)                           /*!< RTC alarm 1 */   
 
 /* RTC coarse calibration direction */
-#define CALIB_INCREASE                     ((uint8_t)0x01U)                           /*!< RTC coarse calibration increase */
-#define CALIB_DECREASE                     ((uint8_t)0x02U)                           /*!< RTC coarse calibration decrease */
+#define CALIB_INCREASE                     ((uint8_t)0x01U)                           /*!< RTC coarse calibration increase */  
+#define CALIB_DECREASE                     ((uint8_t)0x02U)                           /*!< RTC coarse calibration decrease */  
 
 /* RTC wakeup timer clock */
 #define CTL_WTCS(regval)                   (BITS(0,2) & ((regval)<< 0))
@@ -514,7 +514,7 @@ typedef struct {
 #define WAKEUP_RTCCK_DIV2                  CTL_WTCS(3)                                /*!< wakeup timer clock is RTC clock divided by 2 */
 #define WAKEUP_CKSPRE                      CTL_WTCS(4)                                /*!< wakeup timer clock is ckapre */
 #define WAKEUP_CKSPRE_2EXP16               CTL_WTCS(6)                                /*!< wakeup timer clock is ckapre and wakeup timer add 2exp16 */
-
+ 
 /* RTC_AF pin */
 #define RTC_AF0_TIMESTAMP                  ((uint32_t)0x00000000)                     /*!< RTC_AF0 use for timestamp */
 #define RTC_AF1_TIMESTAMP                  RTC_TAMP_TSSEL                             /*!< RTC_AF1 use for timestamp */
@@ -522,7 +522,7 @@ typedef struct {
 #define RTC_AF1_TAMPER0                    RTC_TAMP_TP0SEL                            /*!< RTC_AF1 use for tamper0 */
 
 /* RTC flags */
-#define RTC_FLAG_ALRM0W                                      RTC_STAT_ALRM0WF                           /*!< alarm0 configuration can be write flag */
+#define RTC_FLAG_ALRM0W                    RTC_STAT_ALRM0WF                           /*!< alarm0 configuration can be write flag */
 #define RTC_FLAG_ALRM1W                    RTC_STAT_ALRM1WF                           /*!< alarm1 configuration can be write flag */
 #define RTC_FLAG_WTW                       RTC_STAT_WTWF                              /*!< wakeup timer can be write flag */
 #define RTC_FLAG_SOP                       RTC_STAT_SOPF                              /*!< shift function operation pending flag */
@@ -543,9 +543,9 @@ typedef struct {
 ErrStatus rtc_deinit(void);
 /* initialize RTC registers */
 #ifdef GD_MBED_USED
-ErrStatus rtc_para_init(rtc_parameter_struct *rtc_initpara_struct);
+ErrStatus rtc_para_init(rtc_parameter_struct* rtc_initpara_struct);
 #else
-ErrStatus rtc_init(rtc_parameter_struct *rtc_initpara_struct);
+ErrStatus rtc_init(rtc_parameter_struct* rtc_initpara_struct);
 #endif
 /* enter RTC init mode */
 ErrStatus rtc_init_mode_enter(void);
@@ -555,16 +555,16 @@ void rtc_init_mode_exit(void);
 ErrStatus rtc_register_sync_wait(void);
 
 /* get current time and date */
-void rtc_current_time_get(rtc_parameter_struct *rtc_initpara_struct);
+void rtc_current_time_get(rtc_parameter_struct* rtc_initpara_struct);
 /* get current subsecond value */
 uint32_t rtc_subsecond_get(void);
 
 /* configure RTC alarm */
-void rtc_alarm_config(uint8_t rtc_alarm, rtc_alarm_struct *rtc_alarm_time);
+void rtc_alarm_config(uint8_t rtc_alarm, rtc_alarm_struct* rtc_alarm_time);
 /* configure subsecond of RTC alarm */
 void rtc_alarm_subsecond_config(uint8_t rtc_alarm, uint32_t mask_subsecond, uint32_t subsecond);
 /* get RTC alarm */
-void rtc_alarm_get(uint8_t rtc_alarm, rtc_alarm_struct *rtc_alarm_time);
+void rtc_alarm_get(uint8_t rtc_alarm,rtc_alarm_struct* rtc_alarm_time);
 /* get RTC alarm subsecond */
 uint32_t rtc_alarm_subsecond_get(uint8_t rtc_alarm);
 /* enable RTC alarm */
@@ -577,14 +577,14 @@ void rtc_timestamp_enable(uint32_t edge);
 /* disable RTC time-stamp */
 void rtc_timestamp_disable(void);
 /* get RTC timestamp time and date */
-void rtc_timestamp_get(rtc_timestamp_struct *rtc_timestamp);
+void rtc_timestamp_get(rtc_timestamp_struct* rtc_timestamp);
 /* get RTC time-stamp subsecond */
 uint32_t rtc_timestamp_subsecond_get(void);
 /* RTC time-stamp pin map */
 void rtc_timestamp_pin_map(uint32_t rtc_af);
 
 /* enable RTC tamper */
-void rtc_tamper_enable(rtc_tamper_struct *rtc_tamper);
+void rtc_tamper_enable(rtc_tamper_struct* rtc_tamper);
 /* disable RTC tamper */
 void rtc_tamper_disable(uint32_t source);
 /* RTC tamper0 pin map */
@@ -626,11 +626,7 @@ ErrStatus rtc_wakeup_disable(void);
 /* set auto wakeup timer clock */
 ErrStatus rtc_wakeup_clock_set(uint8_t wakeup_clock);
 /* set auto wakeup timer value */
-#ifdef GD_MBED_USED
-ErrStatus rtc_wakeup_timer_config(uint16_t wakeup_timer);
-#else
 ErrStatus rtc_wakeup_timer_set(uint16_t wakeup_timer);
-#endif
 /* get auto wakeup timer value */
 uint16_t rtc_wakeup_timer_get(void);
 

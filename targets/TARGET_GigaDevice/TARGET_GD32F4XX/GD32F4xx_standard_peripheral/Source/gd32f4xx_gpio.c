@@ -1,16 +1,12 @@
 /*!
-    \file  gd32f4xx_gpio.c
-    \brief GPIO driver
+    \file    gd32f4xx_gpio.c
+    \brief   GPIO driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -48,54 +44,54 @@ OF SUCH DAMAGE.
 */
 void gpio_deinit(uint32_t gpio_periph)
 {
-    switch (gpio_periph) {
-        case GPIOA:
-            /* reset GPIOA */
-            rcu_periph_reset_enable(RCU_GPIOARST);
-            rcu_periph_reset_disable(RCU_GPIOARST);
-            break;
-        case GPIOB:
-            /* reset GPIOB */
-            rcu_periph_reset_enable(RCU_GPIOBRST);
-            rcu_periph_reset_disable(RCU_GPIOBRST);
-            break;
-        case GPIOC:
-            /* reset GPIOC */
-            rcu_periph_reset_enable(RCU_GPIOCRST);
-            rcu_periph_reset_disable(RCU_GPIOCRST);
-            break;
-        case GPIOD:
-            /* reset GPIOD */
-            rcu_periph_reset_enable(RCU_GPIODRST);
-            rcu_periph_reset_disable(RCU_GPIODRST);
-            break;
-        case GPIOE:
-            /* reset GPIOE */
-            rcu_periph_reset_enable(RCU_GPIOERST);
-            rcu_periph_reset_disable(RCU_GPIOERST);
-            break;
-        case GPIOF:
-            /* reset GPIOF */
-            rcu_periph_reset_enable(RCU_GPIOFRST);
-            rcu_periph_reset_disable(RCU_GPIOFRST);
-            break;
-        case GPIOG:
-            /* reset GPIOG */
-            rcu_periph_reset_enable(RCU_GPIOGRST);
-            rcu_periph_reset_disable(RCU_GPIOGRST);
-            break;
-        case GPIOH:
-            /* reset GPIOH */
-            rcu_periph_reset_enable(RCU_GPIOHRST);
-            rcu_periph_reset_disable(RCU_GPIOHRST);
-            break;
-        case GPIOI:
-            /* reset GPIOI */
-            rcu_periph_reset_enable(RCU_GPIOIRST);
-            rcu_periph_reset_disable(RCU_GPIOIRST);
-            break;
-        default:
-            break;
+    switch(gpio_periph) {
+    case GPIOA:
+        /* reset GPIOA */
+        rcu_periph_reset_enable(RCU_GPIOARST);
+        rcu_periph_reset_disable(RCU_GPIOARST);
+        break;
+    case GPIOB:
+        /* reset GPIOB */
+        rcu_periph_reset_enable(RCU_GPIOBRST);
+        rcu_periph_reset_disable(RCU_GPIOBRST);
+        break;
+    case GPIOC:
+        /* reset GPIOC */
+        rcu_periph_reset_enable(RCU_GPIOCRST);
+        rcu_periph_reset_disable(RCU_GPIOCRST);
+        break;
+    case GPIOD:
+        /* reset GPIOD */
+        rcu_periph_reset_enable(RCU_GPIODRST);
+        rcu_periph_reset_disable(RCU_GPIODRST);
+        break;
+    case GPIOE:
+        /* reset GPIOE */
+        rcu_periph_reset_enable(RCU_GPIOERST);
+        rcu_periph_reset_disable(RCU_GPIOERST);
+        break;
+    case GPIOF:
+        /* reset GPIOF */
+        rcu_periph_reset_enable(RCU_GPIOFRST);
+        rcu_periph_reset_disable(RCU_GPIOFRST);
+        break;
+    case GPIOG:
+        /* reset GPIOG */
+        rcu_periph_reset_enable(RCU_GPIOGRST);
+        rcu_periph_reset_disable(RCU_GPIOGRST);
+        break;
+    case GPIOH:
+        /* reset GPIOH */
+        rcu_periph_reset_enable(RCU_GPIOHRST);
+        rcu_periph_reset_disable(RCU_GPIOHRST);
+        break;
+    case GPIOI:
+        /* reset GPIOI */
+        rcu_periph_reset_enable(RCU_GPIOIRST);
+        rcu_periph_reset_disable(RCU_GPIOIRST);
+        break;
+    default:
+        break;
     }
 }
 
@@ -127,8 +123,8 @@ void gpio_mode_set(uint32_t gpio_periph, uint32_t mode, uint32_t pull_up_down, u
     ctl = GPIO_CTL(gpio_periph);
     pupd = GPIO_PUD(gpio_periph);
 
-    for (i = 0U; i < 16U; i++) {
-        if ((1U << i) & pin) {
+    for(i = 0U; i < 16U; i++) {
+        if((1U << i) & pin) {
             /* clear the specified pin mode bits */
             ctl &= ~GPIO_MODE_MASK(i);
             /* set the specified pin mode bits */
@@ -157,7 +153,7 @@ void gpio_mode_set(uint32_t gpio_periph, uint32_t mode, uint32_t pull_up_down, u
       \arg        GPIO_OSPEED_2MHZ: output max speed 2MHz
       \arg        GPIO_OSPEED_25MHZ: output max speed 25MHz
       \arg        GPIO_OSPEED_50MHZ: output max speed 50MHz
-      \arg        GPIO_OSPEED_200MHZ: output max speed 200MHz
+      \arg        GPIO_OSPEED_MAX: output max speed more than 50MHz
     \param[in]  pin: GPIO pin
                 one or more parameters can be selected which are shown as below:
       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
@@ -169,7 +165,7 @@ void gpio_output_options_set(uint32_t gpio_periph, uint8_t otype, uint32_t speed
     uint16_t i;
     uint32_t ospeedr;
 
-    if (GPIO_OTYPE_OD == otype) {
+    if(GPIO_OTYPE_OD == otype) {
         GPIO_OMODE(gpio_periph) |= (uint32_t)pin;
     } else {
         GPIO_OMODE(gpio_periph) &= (uint32_t)(~pin);
@@ -178,8 +174,8 @@ void gpio_output_options_set(uint32_t gpio_periph, uint8_t otype, uint32_t speed
     /* get the specified pin output speed bits value */
     ospeedr = GPIO_OSPD(gpio_periph);
 
-    for (i = 0U; i < 16U; i++) {
-        if ((1U << i) & pin) {
+    for(i = 0U; i < 16U; i++) {
+        if((1U << i) & pin) {
             /* clear the specified pin output speed bits */
             ospeedr &= ~GPIO_OSPEED_MASK(i);
             /* set the specified pin output speed bits */
@@ -190,7 +186,7 @@ void gpio_output_options_set(uint32_t gpio_periph, uint8_t otype, uint32_t speed
 }
 
 /*!
-    \brief      set GPIO pin bit
+    \brief    set GPIO pin bit
     \param[in]  gpio_periph: GPIO port
                 only one parameter can be selected which is shown as below:
       \arg        GPIOx(x = A,B,C,D,E,F,G,H,I)
@@ -237,7 +233,7 @@ void gpio_bit_reset(uint32_t gpio_periph, uint32_t pin)
 */
 void gpio_bit_write(uint32_t gpio_periph, uint32_t pin, bit_status bit_value)
 {
-    if (RESET != bit_value) {
+    if(RESET != bit_value) {
         GPIO_BOP(gpio_periph) = (uint32_t)pin;
     } else {
         GPIO_BC(gpio_periph) = (uint32_t)pin;
@@ -271,7 +267,7 @@ void gpio_port_write(uint32_t gpio_periph, uint16_t data)
 */
 FlagStatus gpio_input_bit_get(uint32_t gpio_periph, uint32_t pin)
 {
-    if ((uint32_t)RESET != (GPIO_ISTAT(gpio_periph) & (pin))) {
+    if((uint32_t)RESET != (GPIO_ISTAT(gpio_periph) & (pin))) {
         return SET;
     } else {
         return RESET;
@@ -304,7 +300,7 @@ uint16_t gpio_input_port_get(uint32_t gpio_periph)
 */
 FlagStatus gpio_output_bit_get(uint32_t gpio_periph, uint32_t pin)
 {
-    if ((uint32_t)RESET != (GPIO_OCTL(gpio_periph) & (pin))) {
+    if((uint32_t)RESET != (GPIO_OCTL(gpio_periph) & (pin))) {
         return SET;
     } else {
         return RESET;
@@ -312,7 +308,7 @@ FlagStatus gpio_output_bit_get(uint32_t gpio_periph, uint32_t pin)
 }
 
 /*!
-    \brief      get GPIO all pins output status
+    \brief      get GPIO port output status
     \param[in]  gpio_periph: GPIO port
                 only one parameter can be selected which is shown as below:
       \arg        GPIOx(x = A,B,C,D,E,F,G,H,I)
@@ -336,13 +332,13 @@ uint16_t gpio_output_port_get(uint32_t gpio_periph)
       \arg        GPIO_AF_3: TIMER7, TIMER8, TIMER9, TIMER10
       \arg        GPIO_AF_4: I2C0, I2C1, I2C2
       \arg        GPIO_AF_5: SPI0, SPI1, SPI2, SPI3, SPI4, SPI5
-      \arg        GPIO_AF_6: SPI1, SPI2, SAI0
-      \arg        GPIO_AF_7: USART0, USART1, USART2
+      \arg        GPIO_AF_6: SPI2, SPI3, SPI4
+      \arg        GPIO_AF_7: USART0, USART1, USART2, SPI1, SPI2
       \arg        GPIO_AF_8: UART3, UART4, USART5, UART6, UART7
-      \arg        GPIO_AF_9: CAN0, CAN1, TLI, TIMER11, TIMER12, TIMER13
+      \arg        GPIO_AF_9: CAN0, CAN1, TLI, TIMER11, TIMER12, TIMER13, I2C1, I2C2, CTC
       \arg        GPIO_AF_10: USB_FS, USB_HS
       \arg        GPIO_AF_11: ENET
-      \arg        GPIO_AF_12: FMC, SDIO, USB_HS
+      \arg        GPIO_AF_12: EXMC, SDIO, USB_HS
       \arg        GPIO_AF_13: DCI
       \arg        GPIO_AF_14: TLI
       \arg        GPIO_AF_15: EVENTOUT
@@ -360,16 +356,16 @@ void gpio_af_set(uint32_t gpio_periph, uint32_t alt_func_num, uint32_t pin)
     afrl = GPIO_AFSEL0(gpio_periph);
     afrh = GPIO_AFSEL1(gpio_periph);
 
-    for (i = 0U; i < 8U; i++) {
-        if ((1U << i) & pin) {
+    for(i = 0U; i < 8U; i++) {
+        if((1U << i) & pin) {
             /* clear the specified pin alternate function bits */
             afrl &= ~GPIO_AFR_MASK(i);
             afrl |= GPIO_AFR_SET(i, alt_func_num);
         }
     }
 
-    for (i = 8U; i < 16U; i++) {
-        if ((1U << i) & pin) {
+    for(i = 8U; i < 16U; i++) {
+        if((1U << i) & pin) {
             /* clear the specified pin alternate function bits */
             afrh &= ~GPIO_AFR_MASK(i - 8U);
             afrh |= GPIO_AFR_SET(i - 8U, alt_func_num);

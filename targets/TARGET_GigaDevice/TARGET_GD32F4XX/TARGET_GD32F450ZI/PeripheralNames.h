@@ -32,7 +32,7 @@ typedef enum {
 } ADCName;
 
 typedef enum {
-    DAC_0 = (int)DAC,
+    DAC_0 = (int)DAC0,
 } DACName;
 
 typedef enum {

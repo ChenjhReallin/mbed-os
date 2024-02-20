@@ -1,15 +1,12 @@
 /*!
-    \file  gd32f4xx_iref.c
-    \brief IREF driver
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \file    gd32f4xx_iref.c
+    \brief   IREF driver
+
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -38,7 +35,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_iref.h"
 
 /*!
-    \brief      deinit IREF
+    \brief      deinitialize IREF
     \param[in]  none
     \param[out] none
     \retval     none
@@ -50,7 +47,7 @@ void iref_deinit(void)
 }
 
 /*!
-    \brief      enable IREF
+    \brief    enable IREF
     \param[in]  none
     \param[out] none
     \retval     none

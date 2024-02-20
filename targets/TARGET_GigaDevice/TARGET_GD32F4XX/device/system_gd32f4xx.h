@@ -5,6 +5,7 @@
 */
 
 /* Copyright (c) 2012 ARM LIMITED
+   Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
@@ -47,9 +48,9 @@ extern uint32_t SystemCoreClock;
 
 /* function declarations */
 /* initialize the system and update the SystemCoreClock variable */
-extern void SystemInit(void);
+extern void SystemInit (void);
 /* update the SystemCoreClock with current core clock retrieved from cpu registers */
-extern void SystemCoreClockUpdate(void);
+extern void SystemCoreClockUpdate (void);
 
 #ifdef __cplusplus
 }

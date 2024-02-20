@@ -56,7 +56,7 @@ const int GD_GPIO_OUTPUT_MODE[] = {
 /* GPIO SPEED */
 const int GD_GPIO_SPEED[] = {
     GPIO_OSPEED_50MHZ,            /* 0 */
-    GPIO_OSPEED_200MHZ,           /* 1 */
+    GPIO_OSPEED_MAX,              /* 1 */
     GPIO_OSPEED_25MHZ,            /* 2 */
     GPIO_OSPEED_2MHZ,             /* 3 */
 };

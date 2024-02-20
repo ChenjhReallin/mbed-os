@@ -2,15 +2,11 @@
     \file    gd32f4xx_ipa.h
     \brief   definitions for the IPA
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -41,31 +37,31 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx.h"
 
-/* TLI definitions */
-#define IPA                               IPA_BASE               /*!< IPA base address */
+/* IPA definitions */
+#define IPA                               IPA_BASE                     /*!< IPA base address */
 
 /* bits definitions */
 /* registers definitions */
-#define IPA_CTL                           REG32(IPA + 0x00U)     /*!< IPA control register */
-#define IPA_INTF                          REG32(IPA + 0x04U)     /*!< IPA interrupt flag register */
-#define IPA_INTC                          REG32(IPA + 0x08U)     /*!< IPA interrupt flag clear register */
-#define IPA_FMADDR                        REG32(IPA + 0x0CU)     /*!< IPA foreground memory base address register */
-#define IPA_FLOFF                         REG32(IPA + 0x10U)     /*!< IPA foreground line offset register */
-#define IPA_BMADDR                        REG32(IPA + 0x14U)     /*!< IPA background memory base address register */
-#define IPA_BLOFF                         REG32(IPA + 0x18U)     /*!< IPA background line offset register */
-#define IPA_FPCTL                         REG32(IPA + 0x1CU)     /*!< IPA foreground pixel control register */
-#define IPA_FPV                           REG32(IPA + 0x20U)     /*!< IPA foreground pixel value register */
-#define IPA_BPCTL                         REG32(IPA + 0x24U)     /*!< IPA background pixel control register */
-#define IPA_BPV                           REG32(IPA + 0x28U)     /*!< IPA background pixel value register */
-#define IPA_FLMADDR                       REG32(IPA + 0x2CU)     /*!< IPA foreground LUT memory base address register */
-#define IPA_BLMADDR                       REG32(IPA + 0x30U)     /*!< IPA background LUT memory base address register */
-#define IPA_DPCTL                         REG32(IPA + 0x34U)     /*!< IPA destination pixel control register */
-#define IPA_DPV                           REG32(IPA + 0x38U)     /*!< IPA destination pixel value register */
-#define IPA_DMADDR                        REG32(IPA + 0x3CU)     /*!< IPA destination memory base address register */
-#define IPA_DLOFF                         REG32(IPA + 0x40U)     /*!< IPA destination line offset register */
-#define IPA_IMS                           REG32(IPA + 0x44U)     /*!< IPA image size register */
-#define IPA_LM                            REG32(IPA + 0x48U)     /*!< IPA line mark register */
-#define IPA_ITCTL                         REG32(IPA + 0x4CU)     /*!< IPA inter-timer control register */
+#define IPA_CTL                           REG32(IPA + 0x00000000U)     /*!< IPA control register */
+#define IPA_INTF                          REG32(IPA + 0x00000004U)     /*!< IPA interrupt flag register */
+#define IPA_INTC                          REG32(IPA + 0x00000008U)     /*!< IPA interrupt flag clear register */
+#define IPA_FMADDR                        REG32(IPA + 0x0000000CU)     /*!< IPA foreground memory base address register */
+#define IPA_FLOFF                         REG32(IPA + 0x00000010U)     /*!< IPA foreground line offset register */
+#define IPA_BMADDR                        REG32(IPA + 0x00000014U)     /*!< IPA background memory base address register */
+#define IPA_BLOFF                         REG32(IPA + 0x00000018U)     /*!< IPA background line offset register */
+#define IPA_FPCTL                         REG32(IPA + 0x0000001CU)     /*!< IPA foreground pixel control register */
+#define IPA_FPV                           REG32(IPA + 0x00000020U)     /*!< IPA foreground pixel value register */
+#define IPA_BPCTL                         REG32(IPA + 0x00000024U)     /*!< IPA background pixel control register */
+#define IPA_BPV                           REG32(IPA + 0x00000028U)     /*!< IPA background pixel value register */
+#define IPA_FLMADDR                       REG32(IPA + 0x0000002CU)     /*!< IPA foreground LUT memory base address register */
+#define IPA_BLMADDR                       REG32(IPA + 0x00000030U)     /*!< IPA background LUT memory base address register */
+#define IPA_DPCTL                         REG32(IPA + 0x00000034U)     /*!< IPA destination pixel control register */
+#define IPA_DPV                           REG32(IPA + 0x00000038U)     /*!< IPA destination pixel value register */
+#define IPA_DMADDR                        REG32(IPA + 0x0000003CU)     /*!< IPA destination memory base address register */
+#define IPA_DLOFF                         REG32(IPA + 0x00000040U)     /*!< IPA destination line offset register */
+#define IPA_IMS                           REG32(IPA + 0x00000044U)     /*!< IPA image size register */
+#define IPA_LM                            REG32(IPA + 0x00000048U)     /*!< IPA line mark register */
+#define IPA_ITCTL                         REG32(IPA + 0x0000004CU)     /*!< IPA inter-timer control register */
 
 /* IPA_CTL */
 #define IPA_CTL_TEN                       BIT(0)           /*!< transfer enable */

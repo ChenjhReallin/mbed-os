@@ -1,16 +1,12 @@
 /*!
-    \file  gd32f4xx_usart.c
-    \brief USART driver
+    \file    gd32f4xx_usart.c
+    \brief   USART driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -36,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-
 #include "gd32f4xx_usart.h"
 
 /* USART register bit offset */
@@ -45,53 +40,53 @@ OF SUCH DAMAGE.
 #define RT_BL_OFFSET              ((uint32_t)24U)      /* bit offset of BL in USART_RT */
 
 /*!
-    \brief      reset USART/UART
+    \brief    reset USART/UART
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
 */
 void usart_deinit(uint32_t usart_periph)
 {
-    switch (usart_periph) {
-        case USART0:
-            rcu_periph_reset_enable(RCU_USART0RST);
-            rcu_periph_reset_disable(RCU_USART0RST);
-            break;
-        case USART1:
-            rcu_periph_reset_enable(RCU_USART1RST);
-            rcu_periph_reset_disable(RCU_USART1RST);
-            break;
-        case USART2:
-            rcu_periph_reset_enable(RCU_USART2RST);
-            rcu_periph_reset_disable(RCU_USART2RST);
-            break;
-        case USART5:
-            rcu_periph_reset_enable(RCU_USART5RST);
-            rcu_periph_reset_disable(RCU_USART5RST);
-            break;
-        case UART3:
-            rcu_periph_reset_enable(RCU_UART3RST);
-            rcu_periph_reset_disable(RCU_UART3RST);
-            break;
-        case UART4:
-            rcu_periph_reset_enable(RCU_UART4RST);
-            rcu_periph_reset_disable(RCU_UART4RST);
-            break;
-        case UART6:
-            rcu_periph_reset_enable(RCU_UART6RST);
-            rcu_periph_reset_disable(RCU_UART6RST);
-            break;
-        case UART7:
-            rcu_periph_reset_enable(RCU_UART7RST);
-            rcu_periph_reset_disable(RCU_UART7RST);
-            break;
-        default:
-            break;
+    switch(usart_periph) {
+    case USART0:
+        rcu_periph_reset_enable(RCU_USART0RST);
+        rcu_periph_reset_disable(RCU_USART0RST);
+        break;
+    case USART1:
+        rcu_periph_reset_enable(RCU_USART1RST);
+        rcu_periph_reset_disable(RCU_USART1RST);
+        break;
+    case USART2:
+        rcu_periph_reset_enable(RCU_USART2RST);
+        rcu_periph_reset_disable(RCU_USART2RST);
+        break;
+    case USART5:
+        rcu_periph_reset_enable(RCU_USART5RST);
+        rcu_periph_reset_disable(RCU_USART5RST);
+        break;
+    case UART3:
+        rcu_periph_reset_enable(RCU_UART3RST);
+        rcu_periph_reset_disable(RCU_UART3RST);
+        break;
+    case UART4:
+        rcu_periph_reset_enable(RCU_UART4RST);
+        rcu_periph_reset_disable(RCU_UART4RST);
+        break;
+    case UART6:
+        rcu_periph_reset_enable(RCU_UART6RST);
+        rcu_periph_reset_disable(RCU_UART6RST);
+        break;
+    case UART7:
+        rcu_periph_reset_enable(RCU_UART7RST);
+        rcu_periph_reset_disable(RCU_UART7RST);
+        break;
+    default:
+        break;
     }
 }
 
 /*!
-    \brief      configure USART baud rate value
+    \brief    configure USART baud rate value
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  baudval: baud rate value
     \param[out] none
@@ -100,36 +95,36 @@ void usart_deinit(uint32_t usart_periph)
 void usart_baudrate_set(uint32_t usart_periph, uint32_t baudval)
 {
     uint32_t uclk = 0U, intdiv = 0U, fradiv = 0U, udiv = 0U;
-    switch (usart_periph) {
-        /* get clock frequency */
-        case USART0:
-            uclk = rcu_clock_freq_get(CK_APB2);
-            break;
-        case USART5:
-            uclk = rcu_clock_freq_get(CK_APB2);
-            break;
-        case USART1:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        case USART2:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        case UART3:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        case UART4:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        case UART6:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        case UART7:
-            uclk = rcu_clock_freq_get(CK_APB1);
-            break;
-        default:
-            break;
+    switch(usart_periph) {
+    /* get clock frequency */
+    case USART0:
+        uclk = rcu_clock_freq_get(CK_APB2);
+        break;
+    case USART5:
+        uclk = rcu_clock_freq_get(CK_APB2);
+        break;
+    case USART1:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    case USART2:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    case UART3:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    case UART4:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    case UART6:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    case UART7:
+        uclk = rcu_clock_freq_get(CK_APB1);
+        break;
+    default:
+        break;
     }
-    if (USART_CTL0(usart_periph) & USART_CTL0_OVSMOD) {
+    if(USART_CTL0(usart_periph) & USART_CTL0_OVSMOD) {
         /* when oversampling by 8, configure the value of USART_BAUD */
         udiv = ((2U * uclk) + baudval / 2U) / baudval;
         intdiv = udiv & 0xfff0U;
@@ -145,7 +140,7 @@ void usart_baudrate_set(uint32_t usart_periph, uint32_t baudval)
 }
 
 /*!
-    \brief     configure USART parity function
+    \brief   configure USART parity function
     \param[in] usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in] paritycfg: configure USART parity
                only one parameter can be selected which is shown as below:
@@ -164,7 +159,7 @@ void usart_parity_config(uint32_t usart_periph, uint32_t paritycfg)
 }
 
 /*!
-    \brief     configure USART word length
+    \brief   configure USART word length
     \param[in] usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in] wlen: USART word length configure
                only one parameter can be selected which is shown as below:
@@ -182,7 +177,7 @@ void usart_word_length_set(uint32_t usart_periph, uint32_t wlen)
 }
 
 /*!
-    \brief     configure USART stop bit length
+    \brief   configure USART stop bit length
     \param[in] usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in] stblen: USART stop bit configure
                only one parameter can be selected which is shown as below:
@@ -201,7 +196,7 @@ void usart_stop_bit_set(uint32_t usart_periph, uint32_t stblen)
     USART_CTL1(usart_periph) |= stblen;
 }
 /*!
-    \brief      enable USART
+    \brief    enable USART
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -212,7 +207,7 @@ void usart_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief     disable USART
+    \brief   disable USART
     \param[in] usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -223,7 +218,7 @@ void usart_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure USART transmitter
+    \brief    configure USART transmitter
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  txconfig: enable or disable USART transmitter
                 only one parameter can be selected which is shown as below:
@@ -244,7 +239,7 @@ void usart_transmit_config(uint32_t usart_periph, uint32_t txconfig)
 }
 
 /*!
-    \brief      configure USART receiver
+    \brief    configure USART receiver
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  rxconfig: enable or disable USART receiver
                 only one parameter can be selected which is shown as below:
@@ -265,7 +260,7 @@ void usart_receive_config(uint32_t usart_periph, uint32_t rxconfig)
 }
 
 /*!
-    \brief      data is transmitted/received with the LSB/MSB first
+    \brief    data is transmitted/received with the LSB/MSB first
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  msbf: LSB/MSB
                 only one parameter can be selected which is shown as below:
@@ -286,7 +281,7 @@ void usart_data_first_config(uint32_t usart_periph, uint32_t msbf)
 }
 
 /*!
-    \brief      configure USART inversion
+    \brief    configure USART inversion
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  invertpara: refer to enum USART_INVERT_CONFIG
                 only one parameter can be selected which is shown as below:
@@ -302,32 +297,32 @@ void usart_data_first_config(uint32_t usart_periph, uint32_t msbf)
 void usart_invert_config(uint32_t usart_periph, usart_invert_enum invertpara)
 {
     /* inverted or not the specified siginal */
-    switch (invertpara) {
-        case USART_DINV_ENABLE:
-            USART_CTL3(usart_periph) |= USART_CTL3_DINV;
-            break;
-        case USART_TXPIN_ENABLE:
-            USART_CTL3(usart_periph) |= USART_CTL3_TINV;
-            break;
-        case USART_RXPIN_ENABLE:
-            USART_CTL3(usart_periph) |= USART_CTL3_RINV;
-            break;
-        case USART_DINV_DISABLE:
-            USART_CTL3(usart_periph) &= ~(USART_CTL3_DINV);
-            break;
-        case USART_TXPIN_DISABLE:
-            USART_CTL3(usart_periph) &= ~(USART_CTL3_TINV);
-            break;
-        case USART_RXPIN_DISABLE:
-            USART_CTL3(usart_periph) &= ~(USART_CTL3_RINV);
-            break;
-        default:
-            break;
+    switch(invertpara) {
+    case USART_DINV_ENABLE:
+        USART_CTL3(usart_periph) |= USART_CTL3_DINV;
+        break;
+    case USART_TXPIN_ENABLE:
+        USART_CTL3(usart_periph) |= USART_CTL3_TINV;
+        break;
+    case USART_RXPIN_ENABLE:
+        USART_CTL3(usart_periph) |= USART_CTL3_RINV;
+        break;
+    case USART_DINV_DISABLE:
+        USART_CTL3(usart_periph) &= ~(USART_CTL3_DINV);
+        break;
+    case USART_TXPIN_DISABLE:
+        USART_CTL3(usart_periph) &= ~(USART_CTL3_TINV);
+        break;
+    case USART_RXPIN_DISABLE:
+        USART_CTL3(usart_periph) &= ~(USART_CTL3_RINV);
+        break;
+    default:
+        break;
     }
 }
 
 /*!
-    \brief      configure the USART oversample mode
+    \brief    configure the USART oversample mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  oversamp: oversample value
                 only one parameter can be selected which is shown as below:
@@ -344,7 +339,7 @@ void usart_oversample_config(uint32_t usart_periph, uint32_t oversamp)
 }
 
 /*!
-    \brief      configure sample bit method
+    \brief    configure sample bit method
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  obsm: sample bit
                 only one parameter can be selected which is shown as below:
@@ -360,7 +355,7 @@ void usart_sample_bit_config(uint32_t usart_periph, uint32_t obsm)
 }
 
 /*!
-    \brief      enable receiver timeout of USART
+    \brief    enable receiver timeout of USART
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -371,7 +366,7 @@ void usart_receiver_timeout_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable receiver timeout of USART
+    \brief    disable receiver timeout of USART
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -382,7 +377,7 @@ void usart_receiver_timeout_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      set the receiver timeout threshold of USART
+    \brief    set the receiver timeout threshold of USART
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  rtimeout: 0-0x00FFFFFF
     \param[out] none
@@ -395,19 +390,19 @@ void usart_receiver_timeout_threshold_config(uint32_t usart_periph, uint32_t rti
 }
 
 /*!
-    \brief      USART transmit data function
+    \brief    USART transmit data function
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  data: data of transmission
     \param[out] none
     \retval     none
 */
-void usart_data_transmit(uint32_t usart_periph, uint32_t data)
+void usart_data_transmit(uint32_t usart_periph, uint16_t data)
 {
-    USART_DATA(usart_periph) = ((uint16_t)USART_DATA_DATA & data);
+    USART_DATA(usart_periph) = USART_DATA_DATA & (uint32_t)data;
 }
 
 /*!
-    \brief      USART receive data function
+    \brief    USART receive data function
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     data of received
@@ -418,7 +413,7 @@ uint16_t usart_data_receive(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure the address of the USART in wake up by address match mode
+    \brief    configure the address of the USART in wake up by address match mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  addr: address of USART/UART
     \param[out] none
@@ -427,11 +422,11 @@ uint16_t usart_data_receive(uint32_t usart_periph)
 void usart_address_config(uint32_t usart_periph, uint8_t addr)
 {
     USART_CTL1(usart_periph) &= ~(USART_CTL1_ADDR);
-    USART_CTL1(usart_periph) |= (USART_CTL1_ADDR & addr);
+    USART_CTL1(usart_periph) |= (USART_CTL1_ADDR & (uint32_t)addr);
 }
 
 /*!
-    \brief      enable mute mode
+    \brief    enable mute mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -442,7 +437,7 @@ void usart_mute_mode_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable mute mode
+    \brief    disable mute mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -453,7 +448,7 @@ void usart_mute_mode_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure wakeup method in mute mode
+    \brief    configure wakeup method in mute mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  wmehtod: two method be used to enter or exit the mute mode
                 only one parameter can be selected which is shown as below:
@@ -469,7 +464,7 @@ void usart_mute_mode_wakeup_config(uint32_t usart_periph, uint32_t wmehtod)
 }
 
 /*!
-    \brief      enable LIN mode
+    \brief    enable LIN mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -480,7 +475,7 @@ void usart_lin_mode_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable LIN mode
+    \brief    disable LIN mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -491,7 +486,7 @@ void usart_lin_mode_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure lin break frame length
+    \brief    configure lin break frame length
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  lblen: lin break frame length
                 only one parameter can be selected which is shown as below:
@@ -507,7 +502,7 @@ void usart_lin_break_detection_length_config(uint32_t usart_periph, uint32_t lbl
 }
 
 /*!
-    \brief      send break frame
+    \brief    send break frame
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -518,7 +513,7 @@ void usart_send_break(uint32_t usart_periph)
 }
 
 /*!
-    \brief      enable half duplex mode
+    \brief    enable half duplex mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -529,7 +524,7 @@ void usart_halfduplex_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable half duplex mode
+    \brief    disable half duplex mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -540,7 +535,7 @@ void usart_halfduplex_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      enable CK pin in synchronous mode
+    \brief    enable CK pin in synchronous mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -551,7 +546,7 @@ void usart_synchronous_clock_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable CK pin in synchronous mode
+    \brief    disable CK pin in synchronous mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -562,7 +557,7 @@ void usart_synchronous_clock_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure USART synchronous mode parameters
+    \brief    configure USART synchronous mode parameters
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  clen: CK length
                 only one parameter can be selected which is shown as below:
@@ -581,32 +576,25 @@ void usart_synchronous_clock_disable(uint32_t usart_periph)
 */
 void usart_synchronous_clock_config(uint32_t usart_periph, uint32_t clen, uint32_t cph, uint32_t cpl)
 {
-    uint32_t ctl = 0U;
-
-    /* read USART_CTL1 register */
-    ctl = USART_CTL1(usart_periph);
-    ctl &= ~(USART_CTL1_CLEN | USART_CTL1_CPH | USART_CTL1_CPL);
-    /* set CK length, CK phase, CK polarity */
-    ctl |= (USART_CTL1_CLEN & clen) | (USART_CTL1_CPH & cph) | (USART_CTL1_CPL & cpl);
-
-    USART_CTL1(usart_periph) = ctl;
+    USART_CTL1(usart_periph) &= ~(USART_CTL1_CLEN | USART_CTL1_CPH | USART_CTL1_CPL);
+    USART_CTL1(usart_periph) |= (USART_CTL1_CLEN & clen) | (USART_CTL1_CPH & cph) | (USART_CTL1_CPL & cpl);
 }
 
 /*!
-    \brief      configure guard time value in smartcard mode
+    \brief    configure guard time value in smartcard mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  guat: guard time value, 0-0xFF
     \param[out] none
     \retval     none
 */
-void usart_guard_time_config(uint32_t usart_periph, uint32_t guat)
+void usart_guard_time_config(uint32_t usart_periph, uint8_t guat)
 {
     USART_GP(usart_periph) &= ~(USART_GP_GUAT);
-    USART_GP(usart_periph) |= (USART_GP_GUAT & ((guat) << GP_GUAT_OFFSET));
+    USART_GP(usart_periph) |= (USART_GP_GUAT & ((uint32_t)guat << GP_GUAT_OFFSET));
 }
 
 /*!
-    \brief      enable smartcard mode
+    \brief    enable smartcard mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -617,7 +605,7 @@ void usart_smartcard_mode_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable smartcard mode
+    \brief    disable smartcard mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -628,7 +616,7 @@ void usart_smartcard_mode_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      enable NACK in smartcard mode
+    \brief    enable NACK in smartcard mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -639,7 +627,7 @@ void usart_smartcard_mode_nack_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable NACK in smartcard mode
+    \brief    disable NACK in smartcard mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[out] none
     \retval     none
@@ -650,33 +638,33 @@ void usart_smartcard_mode_nack_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure smartcard auto-retry number
+    \brief    configure smartcard auto-retry number
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  scrtnum: smartcard auto-retry number
     \param[out] none
     \retval     none
 */
-void usart_smartcard_autoretry_config(uint32_t usart_periph, uint32_t scrtnum)
+void usart_smartcard_autoretry_config(uint32_t usart_periph, uint8_t scrtnum)
 {
     USART_CTL3(usart_periph) &= ~(USART_CTL3_SCRTNUM);
-    USART_CTL3(usart_periph) |= (USART_CTL3_SCRTNUM & ((scrtnum) << CTL3_SCRTNUM_OFFSET));
+    USART_CTL3(usart_periph) |= (USART_CTL3_SCRTNUM & ((uint32_t)scrtnum << CTL3_SCRTNUM_OFFSET));
 }
 
 /*!
-    \brief      configure block length in Smartcard T=1 reception
+    \brief    configure block length in Smartcard T=1 reception
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  bl: block length
     \param[out] none
     \retval     none
 */
-void usart_block_length_config(uint32_t usart_periph, uint32_t bl)
+void usart_block_length_config(uint32_t usart_periph, uint8_t bl)
 {
     USART_RT(usart_periph) &= ~(USART_RT_BL);
-    USART_RT(usart_periph) |= (USART_RT_BL & ((bl) << RT_BL_OFFSET));
+    USART_RT(usart_periph) |= (USART_RT_BL & ((uint32_t)bl << RT_BL_OFFSET));
 }
 
 /*!
-    \brief      enable IrDA mode
+    \brief    enable IrDA mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -687,7 +675,7 @@ void usart_irda_mode_enable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      disable IrDA mode
+    \brief    disable IrDA mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[out] none
     \retval     none
@@ -698,7 +686,7 @@ void usart_irda_mode_disable(uint32_t usart_periph)
 }
 
 /*!
-    \brief      configure the peripheral clock prescaler in USART IrDA low-power mode
+    \brief    configure the peripheral clock prescaler in USART IrDA low-power mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  psc: 0-0xFF
     \param[out] none
@@ -707,11 +695,11 @@ void usart_irda_mode_disable(uint32_t usart_periph)
 void usart_prescaler_config(uint32_t usart_periph, uint8_t psc)
 {
     USART_GP(usart_periph) &= ~(USART_GP_PSC);
-    USART_GP(usart_periph) |= psc;
+    USART_GP(usart_periph) |= (uint32_t)psc;
 }
 
 /*!
-    \brief      configure IrDA low-power
+    \brief    configure IrDA low-power
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  irlp: IrDA low-power or normal
                 only one parameter can be selected which is shown as below:
@@ -727,7 +715,7 @@ void usart_irda_lowpower_config(uint32_t usart_periph, uint32_t irlp)
 }
 
 /*!
-    \brief      configure hardware flow control RTS
+    \brief    configure hardware flow control RTS
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  rtsconfig: enable or disable RTS
                 only one parameter can be selected which is shown as below:
@@ -738,17 +726,11 @@ void usart_irda_lowpower_config(uint32_t usart_periph, uint32_t irlp)
 */
 void usart_hardware_flow_rts_config(uint32_t usart_periph, uint32_t rtsconfig)
 {
-    uint32_t ctl = 0U;
-
-    ctl = USART_CTL2(usart_periph);
-    ctl &= ~USART_CTL2_RTSEN;
-    ctl |= rtsconfig;
-    /* configure RTS */
-    USART_CTL2(usart_periph) = ctl;
+    USART_CTL2(usart_periph) &= ~(USART_CTL2_RTSEN);
+    USART_CTL2(usart_periph) |= (USART_CTL2_RTSEN & rtsconfig);
 }
-
 /*!
-    \brief      configure hardware flow control CTS
+    \brief    configure hardware flow control CTS
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  ctsconfig: enable or disable CTS
                 only one parameter can be selected which is shown as below:
@@ -759,17 +741,12 @@ void usart_hardware_flow_rts_config(uint32_t usart_periph, uint32_t rtsconfig)
 */
 void usart_hardware_flow_cts_config(uint32_t usart_periph, uint32_t ctsconfig)
 {
-    uint32_t ctl = 0U;
-
-    ctl = USART_CTL2(usart_periph);
-    ctl &= ~USART_CTL2_CTSEN;
-    ctl |= ctsconfig;
-    /* configure CTS */
-    USART_CTL2(usart_periph) = ctl;
+    USART_CTL2(usart_periph) &= ~(USART_CTL2_CTSEN);
+    USART_CTL2(usart_periph) |= (USART_CTL2_CTSEN & ctsconfig);
 }
 
 /*!
-    \brief      configure break frame coherence mode
+    \brief    configure break frame coherence mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  bcm:
                 only one parameter can be selected which is shown as below:
@@ -785,7 +762,7 @@ void usart_break_frame_coherence_config(uint32_t usart_periph, uint32_t bcm)
 }
 
 /*!
-    \brief      configure parity check coherence mode
+    \brief    configure parity check coherence mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  pcm:
                 only one parameter can be selected which is shown as below:
@@ -801,7 +778,7 @@ void usart_parity_check_coherence_config(uint32_t usart_periph, uint32_t pcm)
 }
 
 /*!
-    \brief      configure hardware flow control coherence mode
+    \brief    configure hardware flow control coherence mode
     \param[in]  usart_periph: USARTx(x=0,1,2,5)
     \param[in]  hcm:
                 only one parameter can be selected which is shown as below:
@@ -817,49 +794,39 @@ void usart_hardware_flow_coherence_config(uint32_t usart_periph, uint32_t hcm)
 }
 
 /*!
-    \brief      configure USART DMA reception
+    \brief    configure USART DMA reception
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  dmacmd: enable or disable DMA for reception
                 only one parameter can be selected which is shown as below:
-      \arg        USART_DENR_ENABLE:  DMA enable for reception
-      \arg        USART_DENR_DISABLE: DMA disable for reception
+      \arg        USART_RECEIVE_DMA_ENABLE: DMA enable for reception
+      \arg        USART_RECEIVE_DMA_DISABLE: DMA disable for reception
     \param[out] none
     \retval     none
 */
 void usart_dma_receive_config(uint32_t usart_periph, uint32_t dmacmd)
 {
-    uint32_t ctl = 0U;
-
-    ctl = USART_CTL2(usart_periph);
-    ctl &= ~USART_CTL2_DENR;
-    ctl |= dmacmd;
-    /* configure DMA reception */
-    USART_CTL2(usart_periph) = ctl;
+    USART_CTL2(usart_periph) &= ~(USART_CTL2_DENR);
+    USART_CTL2(usart_periph) |= (USART_CTL2_DENR & dmacmd);
 }
 
 /*!
-    \brief      configure USART DMA transmission
+    \brief    configure USART DMA transmission
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  dmacmd: enable or disable DMA for transmission
                 only one parameter can be selected which is shown as below:
-      \arg        USART_DENT_ENABLE:  DMA enable for transmission
-      \arg        USART_DENT_DISABLE: DMA disable for transmission
+      \arg        USART_TRANSMIT_DMA_ENABLE:  DMA enable for transmission
+      \arg        USART_TRANSMIT_DMA_DISABLE: DMA disable for transmission
     \param[out] none
     \retval     none
 */
 void usart_dma_transmit_config(uint32_t usart_periph, uint32_t dmacmd)
 {
-    uint32_t ctl = 0U;
-
-    ctl = USART_CTL2(usart_periph);
-    ctl &= ~USART_CTL2_DENT;
-    ctl |= dmacmd;
-    /* configure DMA transmission */
-    USART_CTL2(usart_periph) = ctl;
+    USART_CTL2(usart_periph) &= ~(USART_CTL2_DENT);
+    USART_CTL2(usart_periph) |= (USART_CTL2_DENT & dmacmd);
 }
 
 /*!
-    \brief      get flag in STAT0/STAT1/CHC register
+    \brief    get flag in STAT0/STAT1/CHC register
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  flag: USART flags, refer to usart_flag_enum
                 only one parameter can be selected which is shown as below:
@@ -882,7 +849,7 @@ void usart_dma_transmit_config(uint32_t usart_periph, uint32_t dmacmd)
 */
 FlagStatus usart_flag_get(uint32_t usart_periph, usart_flag_enum flag)
 {
-    if (RESET != (USART_REG_VAL(usart_periph, flag) & BIT(USART_BIT_POS(flag)))) {
+    if(RESET != (USART_REG_VAL(usart_periph, flag) & BIT(USART_BIT_POS(flag)))) {
         return SET;
     } else {
         return RESET;
@@ -890,7 +857,7 @@ FlagStatus usart_flag_get(uint32_t usart_periph, usart_flag_enum flag)
 }
 
 /*!
-    \brief      clear flag in STAT0/STAT1/CHC register
+    \brief    clear flag in STAT0/STAT1/CHC register
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  flag: USART flags, refer to usart_flag_enum
                 only one parameter can be selected which is shown as below:
@@ -906,11 +873,15 @@ FlagStatus usart_flag_get(uint32_t usart_periph, usart_flag_enum flag)
 */
 void usart_flag_clear(uint32_t usart_periph, usart_flag_enum flag)
 {
-    USART_REG_VAL(usart_periph, flag) &= ~BIT(USART_BIT_POS(flag));
-}
+    if (USART_FLAG_EPERR == flag) {
+        USART_REG_VAL(usart_periph, flag) &= ~BIT(USART_BIT_POS(flag));
+    } else {
+        USART_REG_VAL(usart_periph, flag) = ~BIT(USART_BIT_POS(flag));
+    }
+} 
 
 /*!
-    \brief      enable USART interrupt
+    \brief    enable USART interrupt
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  interrupt: USART interrupts, refer to usart_interrupt_enum
                 only one parameter can be selected which is shown as below:
@@ -933,7 +904,7 @@ void usart_interrupt_enable(uint32_t usart_periph, usart_interrupt_enum interrup
 }
 
 /*!
-    \brief      disable USART interrupt
+    \brief    disable USART interrupt
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  interrupt: USART interrupts, refer to usart_interrupt_enum
                 only one parameter can be selected which is shown as below:
@@ -956,7 +927,7 @@ void usart_interrupt_disable(uint32_t usart_periph, usart_interrupt_enum interru
 }
 
 /*!
-    \brief      get USART interrupt and flag status
+    \brief    get USART interrupt and flag status
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  int_flag: USART interrupt flags, refer to usart_interrupt_flag_enum
                 only one parameter can be selected which is shown as below:
@@ -984,7 +955,7 @@ FlagStatus usart_interrupt_flag_get(uint32_t usart_periph, usart_interrupt_flag_
     /* get the corresponding flag bit status */
     flagstatus = (USART_REG_VAL2(usart_periph, int_flag) & BIT(USART_BIT_POS2(int_flag)));
 
-    if ((0U != flagstatus) && (0U != intenable)) {
+    if((0U != flagstatus) && (0U != intenable)) {
         return SET;
     } else {
         return RESET;
@@ -992,7 +963,7 @@ FlagStatus usart_interrupt_flag_get(uint32_t usart_periph, usart_interrupt_flag_
 }
 
 /*!
-    \brief      clear USART interrupt flag in STAT0/STAT1 register
+    \brief    clear USART interrupt flag in STAT0/STAT1 register
     \param[in]  usart_periph: USARTx(x=0,1,2,5)/UARTx(x=3,4,6,7)
     \param[in]  int_flag: USART interrupt flags, refer to usart_interrupt_flag_enum
                 only one parameter can be selected which is shown as below:

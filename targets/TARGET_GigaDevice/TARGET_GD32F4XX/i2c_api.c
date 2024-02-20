@@ -578,7 +578,7 @@ int i2c_slave_receive(i2c_t *obj)
             ret = WriteGeneral;
         }
 
-        if (i2c_flag_get(obj_s->i2c, I2C_FLAG_TRS)) {
+        if (i2c_flag_get(obj_s->i2c, I2C_FLAG_TR)) {
             ret = ReadAddressed;
         } else {
             ret = WriteAddressed;

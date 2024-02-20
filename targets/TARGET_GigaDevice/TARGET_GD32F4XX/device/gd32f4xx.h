@@ -1,57 +1,59 @@
 /*!
     \file    gd32f4xx.h
-    \brief   general definitions for GD32E10x
-
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \brief   general definitions for GD32F4xx
+    
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx  
 */
 
-/*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
+/* Copyright (c) 2012 ARM LIMITED
+   Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
-    All rights reserved.
+   All rights reserved.
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+   - Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   - Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+   - Neither the name of ARM nor the names of its contributors may be used
+     to endorse or promote products derived from this software without
+     specific prior written permission.
+   *
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   ---------------------------------------------------------------------------*/
 
-    Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice, this
-       list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice,
-       this list of conditions and the following disclaimer in the documentation
-       and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors
-       may be used to endorse or promote products derived from this software without
-       specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-OF SUCH DAMAGE.
-*/
+/* This file refers the CMSIS standard, some adjustments are made according to GigaDevice chips */
 
 #ifndef GD32F4XX_H
 #define GD32F4XX_H
 
 #ifdef __cplusplus
-extern "C" {
-#endif
+ extern "C" {
+#endif 
 
 /* define GD32F4xx */
-#if !defined (GD32F450)  && !defined (GD32F405) && !defined (GD32F407)
-/* #define GD32F450 */
-/* #define GD32F405 */
-/* #define GD32F407 */
+#if !defined (GD32F450)  && !defined (GD32F405) && !defined (GD32F407) && !defined (GD32F470)  && !defined (GD32F425) && !defined (GD32F427)
+  /* #define GD32F450 */
+  /* #define GD32F405 */
+  /* #define GD32F407 */
+  /* #define GD32F470 */
+  /* #define GD32F425 */
+  /* #define GD32F427 */
 #endif /* define GD32F4xx */
-
-#if !defined (GD32F450)  && !defined (GD32F405) && !defined (GD32F407)
-#error "Please select the target GD32F4xx device in gd32f4xx.h file"
+   
+#if !defined (GD32F450)  && !defined (GD32F405) && !defined (GD32F407) && !defined (GD32F470)  && !defined (GD32F425) && !defined (GD32F427)
+ #error "Please select the target GD32F4xx device in gd32f4xx.h file"
 #endif /* undefine GD32F4xx tip */
 
 /* define value of high speed crystal oscillator (HXTAL) in Hz */
@@ -67,7 +69,7 @@ extern "C" {
 #endif /* high speed crystal oscillator startup timeout */
 
 /* define value of internal 16MHz RC oscillator (IRC16M) in Hz */
-#if !defined  (IRC16M_VALUE)
+#if !defined  (IRC16M_VALUE) 
 #define IRC16M_VALUE  ((uint32_t)16000000)
 #endif /* internal 16MHz RC oscillator value */
 
@@ -77,12 +79,12 @@ extern "C" {
 #endif /* internal 16MHz RC oscillator startup timeout */
 
 /* define value of internal 32KHz RC oscillator(IRC32K) in Hz */
-#if !defined  (IRC32K_VALUE)
+#if !defined  (IRC32K_VALUE) 
 #define IRC32K_VALUE  ((uint32_t)32000)
 #endif /* internal 32KHz RC oscillator value */
 
 /* define value of low speed crystal oscillator (LXTAL)in Hz */
-#if !defined  (LXTAL_VALUE)
+#if !defined  (LXTAL_VALUE) 
 #define LXTAL_VALUE  ((uint32_t)32768)
 #endif /* low speed crystal oscillator value */
 
@@ -93,7 +95,7 @@ extern "C" {
 #define __GD32F4xx_STDPERIPH_VERSION_MAIN   (0x03) /*!< [31:24] main version     */
 #define __GD32F4xx_STDPERIPH_VERSION_SUB1   (0x00) /*!< [23:16] sub1 version     */
 #define __GD32F4xx_STDPERIPH_VERSION_SUB2   (0x00) /*!< [15:8]  sub2 version     */
-#define __GD32F4xx_STDPERIPH_VERSION_RC     (0x00) /*!< [7:0]  release candidate */
+#define __GD32F4xx_STDPERIPH_VERSION_RC     (0x00) /*!< [7:0]  release candidate */ 
 #define __GD32F4xx_STDPERIPH_VERSION        ((__GD32F4xx_STDPERIPH_VERSION_MAIN << 24)\
                                             |(__GD32F4xx_STDPERIPH_VERSION_SUB1 << 16)\
                                             |(__GD32F4xx_STDPERIPH_VERSION_SUB2 << 8)\
@@ -106,7 +108,8 @@ extern "C" {
 #define __Vendor_SysTickConfig    0        /*!< set to 1 if different sysTick config is used             */
 #define __FPU_PRESENT             1        /*!< FPU present                                              */
 /* define interrupt number */
-typedef enum IRQn {
+typedef enum IRQn
+{
     /* cortex-M4 processor exceptions numbers */
     NonMaskableInt_IRQn          = -14,    /*!< 2 non maskable interrupt                                 */
     MemoryManagement_IRQn        = -12,    /*!< 4 cortex-M4 memory management interrupt                  */
@@ -165,8 +168,8 @@ typedef enum IRQn {
     TIMER7_TRG_CMT_TIMER13_IRQn  = 45,     /*!< TIMER7 trigger and commutation and TIMER13 interrupts    */
     TIMER7_Channel_IRQn          = 46,     /*!< TIMER7 channel capture compare interrupt                 */
     DMA0_Channel7_IRQn           = 47,     /*!< DMA0 channel7 interrupt                                  */
-
-#if defined (GD32F450)
+    
+#if defined (GD32F450) || defined (GD32F470)
     EXMC_IRQn                    = 48,     /*!< EXMC interrupt                                           */
     SDIO_IRQn                    = 49,     /*!< SDIO interrupt                                           */
     TIMER4_IRQn                  = 50,     /*!< TIMER4 interrupt                                         */
@@ -208,9 +211,9 @@ typedef enum IRQn {
     TLI_IRQn                     = 88,     /*!< TLI interrupt                                            */
     TLI_ER_IRQn                  = 89,     /*!< TLI error interrupt                                      */
     IPA_IRQn                     = 90,     /*!< IPA interrupt                                            */
-#endif /* GD32F450 */
+#endif /* GD32F450 and GD32F470 */
 
-#if defined (GD32F405)
+#if defined (GD32F405) || defined (GD32F425)
     SDIO_IRQn                    = 49,     /*!< SDIO interrupt                                           */
     TIMER4_IRQn                  = 50,     /*!< TIMER4 interrupt                                         */
     SPI2_IRQn                    = 51,     /*!< SPI2 interrupt                                           */
@@ -241,9 +244,9 @@ typedef enum IRQn {
     DCI_IRQn                     = 78,     /*!< DCI interrupt                                            */
     TRNG_IRQn                    = 80,     /*!< TRNG interrupt                                           */
     FPU_IRQn                     = 81,     /*!< FPU interrupt                                            */
-#endif /* GD32F405 */
+#endif /* GD32F405 and GD32F425 */
 
-#if defined (GD32F407)
+#if defined (GD32F407) || defined (GD32F427)
     EXMC_IRQn                    = 48,     /*!< EXMC interrupt                                           */
     SDIO_IRQn                    = 49,     /*!< SDIO interrupt                                           */
     TIMER4_IRQn                  = 50,     /*!< TIMER4 interrupt                                         */
@@ -277,7 +280,7 @@ typedef enum IRQn {
     DCI_IRQn                     = 78,     /*!< DCI interrupt                                            */
     TRNG_IRQn                    = 80,     /*!< TRNG interrupt                                           */
     FPU_IRQn                     = 81,     /*!< FPU interrupt                                            */
-#endif /* GD32F407 */
+#endif /* GD32F407 and GD32F427 */
 
 } IRQn_Type;
 
@@ -325,7 +328,7 @@ typedef enum {ERROR = 0, SUCCESS = !ERROR} ErrStatus;
 #define REG16(addr)                  (*(volatile uint16_t *)(uint32_t)(addr))
 #define REG8(addr)                   (*(volatile uint8_t *)(uint32_t)(addr))
 #define BIT(x)                       ((uint32_t)((uint32_t)0x01U<<(x)))
-#define BITS(start, end)             ((0xFFFFFFFFUL << (start)) & (0xFFFFFFFFUL >> (31U - (uint32_t)(end))))
+#define BITS(start, end)             ((0xFFFFFFFFUL << (start)) & (0xFFFFFFFFUL >> (31U - (uint32_t)(end)))) 
 #define GET_BITS(regval, start, end) (((regval) & BITS((start),(end))) >> (start))
 
 /* main flash and SRAM memory map */
@@ -386,7 +389,7 @@ typedef enum {ERROR = 0, SUCCESS = !ERROR} ErrStatus;
 /* define marco USE_STDPERIPH_DRIVER */
 #if !defined  USE_STDPERIPH_DRIVER
 #define USE_STDPERIPH_DRIVER
-#endif
+#endif 
 #ifdef USE_STDPERIPH_DRIVER
 #include "gd32f4xx_libopt.h"
 #endif /* USE_STDPERIPH_DRIVER */
@@ -394,4 +397,4 @@ typedef enum {ERROR = 0, SUCCESS = !ERROR} ErrStatus;
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif 

@@ -122,9 +122,9 @@ void analogin_init(analogin_t *obj, PinName pin)
     /* ADC data alignment config */
     adc_data_alignment_config(obj->adc, ADC_DATAALIGN_RIGHT);
     /* ADC channel length config */
-    adc_channel_length_config(obj->adc, ADC_REGULAR_CHANNEL, 1);
+    adc_channel_length_config(obj->adc, ADC_ROUTINE_CHANNEL, 1);
 
-    adc_external_trigger_config(obj->adc, ADC_REGULAR_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_config(obj->adc, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
     /* ADC regular channel config */
     if (temperature_sample_flag == SET) {
         /* sample temperature needs more time */
@@ -154,7 +154,7 @@ uint16_t analogin_read_u16(analogin_t *obj)
 
     adc_flag_clear(obj->adc, ADC_FLAG_EOC);
     /* start Conversion */
-    adc_software_trigger_enable(obj->adc, ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(obj->adc, ADC_ROUTINE_CHANNEL);
 
     while (SET != adc_flag_get(obj->adc, ADC_FLAG_EOC)) {
     }
@@ -177,7 +177,7 @@ float analogin_read(analogin_t *obj)
 
     adc_flag_clear(obj->adc, ADC_FLAG_EOC);
     /* start Conversion */
-    adc_software_trigger_enable(obj->adc, ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(obj->adc, ADC_ROUTINE_CHANNEL);
     /* wait for conversion to complete */
     while (SET != adc_flag_get(obj->adc, ADC_FLAG_EOC)) {
     }

@@ -2,16 +2,11 @@
     \file    gd32f4xx_crc.c
     \brief   CRC driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
-
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -41,6 +36,7 @@ OF SUCH DAMAGE.
 
 #define CRC_DATA_RESET_VALUE      ((uint32_t)0xFFFFFFFFU)
 #define CRC_FDATA_RESET_VALUE     ((uint32_t)0x00000000U)
+
 /*!
     \brief      deinit CRC calculation unit
     \param[in]  none
@@ -124,7 +120,7 @@ uint32_t crc_single_data_calculate(uint32_t sdata)
 uint32_t crc_block_data_calculate(uint32_t array[], uint32_t size)
 {
     uint32_t index;
-    for (index = 0U; index < size; index++) {
+    for(index = 0U; index < size; index++) {
         CRC_DATA = array[index];
     }
     return (CRC_DATA);

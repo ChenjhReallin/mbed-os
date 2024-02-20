@@ -144,7 +144,7 @@ void hal_deepsleep(void)
 
     /* enter DEEP-SLEEP mode */
     rcu_periph_clock_enable(RCU_PMU);
-    pmu_to_deepsleepmode(PMU_LDO_NORMAL, WFI_CMD);
+    pmu_to_deepsleepmode(PMU_LDO_NORMAL, PMU_LOWDRIVER_DISABLE, WFI_CMD);
 
     mbed_sdk_inited = 0;
 

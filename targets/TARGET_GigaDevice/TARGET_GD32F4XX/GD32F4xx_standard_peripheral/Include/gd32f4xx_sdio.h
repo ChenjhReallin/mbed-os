@@ -2,15 +2,11 @@
     \file    gd32f4xx_sdio.h
     \brief   definitions for the SDIO
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -45,24 +41,24 @@ OF SUCH DAMAGE.
 #define SDIO                            SDIO_BASE
 
 /* registers definitions */
-#define SDIO_PWRCTL                     REG32(SDIO + 0x00U)    /*!< SDIO power control register */
-#define SDIO_CLKCTL                     REG32(SDIO + 0x04U)    /*!< SDIO clock control register */
-#define SDIO_CMDAGMT                    REG32(SDIO + 0x08U)    /*!< SDIO command argument register */
-#define SDIO_CMDCTL                     REG32(SDIO + 0x0CU)    /*!< SDIO command control register */
-#define SDIO_RSPCMDIDX                  REG32(SDIO + 0x10U)    /*!< SDIO command index response register */
-#define SDIO_RESP0                      REG32(SDIO + 0x14U)    /*!< SDIO response register 0 */
-#define SDIO_RESP1                      REG32(SDIO + 0x18U)    /*!< SDIO response register 1 */
-#define SDIO_RESP2                      REG32(SDIO + 0x1CU)    /*!< SDIO response register 2 */
-#define SDIO_RESP3                      REG32(SDIO + 0x20U)    /*!< SDIO response register 3 */
-#define SDIO_DATATO                     REG32(SDIO + 0x24U)    /*!< SDIO data timeout register */
-#define SDIO_DATALEN                    REG32(SDIO + 0x28U)    /*!< SDIO data length register */
-#define SDIO_DATACTL                    REG32(SDIO + 0x2CU)    /*!< SDIO data control register */
-#define SDIO_DATACNT                    REG32(SDIO + 0x30U)    /*!< SDIO data counter register */
-#define SDIO_STAT                       REG32(SDIO + 0x34U)    /*!< SDIO status register */
-#define SDIO_INTC                       REG32(SDIO + 0x38U)    /*!< SDIO interrupt clear register */
-#define SDIO_INTEN                      REG32(SDIO + 0x3CU)    /*!< SDIO interrupt enable register */
-#define SDIO_FIFOCNT                    REG32(SDIO + 0x48U)    /*!< SDIO FIFO counter register */
-#define SDIO_FIFO                       REG32(SDIO + 0x80U)    /*!< SDIO FIFO data register */
+#define SDIO_PWRCTL                     REG32(SDIO + 0x00000000U)    /*!< SDIO power control register */
+#define SDIO_CLKCTL                     REG32(SDIO + 0x00000004U)    /*!< SDIO clock control register */
+#define SDIO_CMDAGMT                    REG32(SDIO + 0x00000008U)    /*!< SDIO command argument register */
+#define SDIO_CMDCTL                     REG32(SDIO + 0x0000000CU)    /*!< SDIO command control register */
+#define SDIO_RSPCMDIDX                  REG32(SDIO + 0x00000010U)    /*!< SDIO command index response register */
+#define SDIO_RESP0                      REG32(SDIO + 0x00000014U)    /*!< SDIO response register 0 */
+#define SDIO_RESP1                      REG32(SDIO + 0x00000018U)    /*!< SDIO response register 1 */
+#define SDIO_RESP2                      REG32(SDIO + 0x0000001CU)    /*!< SDIO response register 2 */
+#define SDIO_RESP3                      REG32(SDIO + 0x00000020U)    /*!< SDIO response register 3 */
+#define SDIO_DATATO                     REG32(SDIO + 0x00000024U)    /*!< SDIO data timeout register */
+#define SDIO_DATALEN                    REG32(SDIO + 0x00000028U)    /*!< SDIO data length register */
+#define SDIO_DATACTL                    REG32(SDIO + 0x0000002CU)    /*!< SDIO data control register */
+#define SDIO_DATACNT                    REG32(SDIO + 0x00000030U)    /*!< SDIO data counter register */
+#define SDIO_STAT                       REG32(SDIO + 0x00000034U)    /*!< SDIO status register */
+#define SDIO_INTC                       REG32(SDIO + 0x00000038U)    /*!< SDIO interrupt clear register */
+#define SDIO_INTEN                      REG32(SDIO + 0x0000003CU)    /*!< SDIO interrupt enable register */
+#define SDIO_FIFOCNT                    REG32(SDIO + 0x00000048U)    /*!< SDIO FIFO counter register */
+#define SDIO_FIFO                       REG32(SDIO + 0x00000080U)    /*!< SDIO FIFO data register */
 
 /* bits definitions */
 /* SDIO_PWRCTL */

@@ -45,7 +45,7 @@ void analogout_init(dac_t *obj, PinName pin)
     MBED_ASSERT(function != (uint32_t)NC);
 
     obj->channel = GD_PIN_CHANNEL_GET(function);
-    MBED_ASSERT(obj->channel <= DAC1);
+    MBED_ASSERT(obj->channel <= DAC_OUT1);
 
     /* configure GPIO */
     pinmap_pinout(pin, PinMap_DAC);
@@ -57,9 +57,9 @@ void analogout_init(dac_t *obj, PinName pin)
     rcu_periph_clock_enable(RCU_DAC);
 
     /* configure DAC */
-    dac_wave_mode_config(obj->channel, DAC_WAVE_DISABLE);
-    dac_trigger_disable(obj->channel);
-    dac_output_buffer_enable(obj->channel);
+    dac_wave_mode_config(obj->dac, obj->channel, DAC_WAVE_DISABLE);
+    dac_trigger_disable(obj->dac, obj->channel);
+    dac_output_buffer_enable(obj->dac, obj->channel);
     analogout_write_u16(obj, 0);
 }
 
@@ -71,7 +71,7 @@ void analogout_init(dac_t *obj, PinName pin)
 void analogout_free(dac_t *obj)
 {
     /* reset DAC and disable clock */
-    dac_deinit();
+    dac_deinit(obj->dac);
     rcu_periph_clock_disable(RCU_DAC);
 
     /* configure GPIO */
@@ -89,9 +89,9 @@ void analogout_free(dac_t *obj)
  */
 static inline void dev_dac_data_set(dac_t *obj, uint16_t value)
 {
-    dac_data_set(obj->channel, DAC_ALIGN_12B_R, (value & DEV_DAC_ACCURACY_12BIT));
+    dac_data_set(obj->dac, obj->channel, DAC_ALIGN_12B_R, (value & DEV_DAC_ACCURACY_12BIT));
 
-    dac_enable(obj->channel);
+    dac_enable(obj->dac, obj->channel);
 }
 
 /** get the current DAC data
@@ -101,7 +101,7 @@ static inline void dev_dac_data_set(dac_t *obj, uint16_t value)
  */
 static inline uint16_t dev_dac_data_get(dac_t *obj)
 {
-    return (uint16_t)dac_output_value_get(obj->channel);
+    return (uint16_t)dac_output_value_get(obj->dac, obj->channel);
 }
 
 /** Set the output voltage, specified as a percentage (float)

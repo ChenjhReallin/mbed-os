@@ -2,15 +2,11 @@
     \file    gd32f4xx_tli.c
     \brief   TLI driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2018-12-25, V2.1.0, firmware for GD32F4xx (The version is for mbed)
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -69,9 +65,9 @@ void tli_deinit(void)
                   backcolor_red: background value red
                   backcolor_green: background value green
                   backcolor_blue: background value blue
-                  signalpolarity_hs: TLI_HSYN_ACTLIVE_LOW,TLI_HSYN_ACTLIVE_HIGHT
-                  signalpolarity_vs: TLI_VSYN_ACTLIVE_LOW,TLI_VSYN_ACTLIVE_HIGHT
-                  signalpolarity_de: TLI_DE_ACTLIVE_LOW,TLI_DE_ACTLIVE_HIGHT
+                  signalpolarity_hs: TLI_HSYN_ACTLIVE_LOW,TLI_HSYN_ACTLIVE_HIGH
+                  signalpolarity_vs: TLI_VSYN_ACTLIVE_LOW,TLI_VSYN_ACTLIVE_HIGH
+                  signalpolarity_de: TLI_DE_ACTLIVE_LOW,TLI_DE_ACTLIVE_HIGH
                   signalpolarity_pixelck: TLI_PIXEL_CLOCK_TLI,TLI_PIXEL_CLOCK_INVERTEDTLI
     \retval     none
 */
@@ -109,9 +105,9 @@ void tli_struct_para_init(tli_parameter_struct *tli_struct)
                   backcolor_red: background value red
                   backcolor_green: background value green
                   backcolor_blue: background value blue
-                  signalpolarity_hs: TLI_HSYN_ACTLIVE_LOW,TLI_HSYN_ACTLIVE_HIGHT
-                  signalpolarity_vs: TLI_VSYN_ACTLIVE_LOW,TLI_VSYN_ACTLIVE_HIGHT
-                  signalpolarity_de: TLI_DE_ACTLIVE_LOW,TLI_DE_ACTLIVE_HIGHT
+                  signalpolarity_hs: TLI_HSYN_ACTLIVE_LOW,TLI_HSYN_ACTLIVE_HIGH
+                  signalpolarity_vs: TLI_VSYN_ACTLIVE_LOW,TLI_VSYN_ACTLIVE_HIGH
+                  signalpolarity_de: TLI_DE_ACTLIVE_LOW,TLI_DE_ACTLIVE_HIGH
                   signalpolarity_pixelck: TLI_PIXEL_CLOCK_TLI,TLI_PIXEL_CLOCK_INVERTEDTLI
     \param[out] none
     \retval     none
@@ -150,7 +146,7 @@ void tli_init(tli_parameter_struct *tli_struct)
 */
 void tli_dither_config(uint8_t dither_stat)
 {
-    if (TLI_DITHER_ENABLE == dither_stat) {
+    if(TLI_DITHER_ENABLE == dither_stat) {
         TLI_CTL |= TLI_CTL_DFEN;
     } else {
         TLI_CTL &= ~(TLI_CTL_DFEN);
@@ -169,14 +165,14 @@ void tli_enable(void)
 }
 
 /*!
-    \brief      disable TLI
+    \brief    disable TLI
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void tli_disable(void)
 {
-    TLI_CTL &= ~(TLI_CTL_DFEN);
+    TLI_CTL &= ~(TLI_CTL_TLIEN);
 }
 
 /*!
@@ -190,7 +186,7 @@ void tli_disable(void)
 */
 void tli_reload_config(uint8_t reload_mod)
 {
-    if (TLI_FRAME_BLANK_RELOAD_EN == reload_mod) {
+    if(TLI_FRAME_BLANK_RELOAD_EN == reload_mod) {
         /* the layer configuration will be reloaded at frame blank */
         TLI_RL |= TLI_RL_FBR;
     } else {
@@ -325,29 +321,29 @@ void tli_layer_window_offset_modify(uint32_t layerx, uint16_t offset_x, uint16_t
     line_num = (TLI_LxFTLN(layerx) & TLI_LxFTLN_FTLN);
     layer_ppf = (TLI_LxPPF(layerx) & TLI_LxPPF_PPF);
     /* the bytes of a line equal TLI_LxFLLEN_FLL bits value minus 3 */
-    switch (layer_ppf) {
-        case LAYER_PPF_ARGB8888:
-            /* each pixel includes 4bytes, when pixel format is ARGB8888 */
-            line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 4U);
-            break;
-        case LAYER_PPF_RGB888:
-            /* each pixel includes 3bytes, when pixel format is RGB888 */
-            line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 3U);
-            break;
-        case LAYER_PPF_RGB565:
-        case LAYER_PPF_ARGB1555:
-        case LAYER_PPF_ARGB4444:
-        case LAYER_PPF_AL88:
-            /* each pixel includes 2bytes, when pixel format is RGB565,ARG1555,ARGB4444 or AL88 */
-            line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 2U);
-            break;
-        case LAYER_PPF_L8:
-        case LAYER_PPF_AL44:
-            /* each pixel includes 1byte, when pixel format is L8 or AL44 */
-            line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U));
-            break;
-        default:
-            break;
+    switch(layer_ppf) {
+    case LAYER_PPF_ARGB8888:
+        /* each pixel includes 4bytes, when pixel format is ARGB8888 */
+        line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 4U);
+        break;
+    case LAYER_PPF_RGB888:
+        /* each pixel includes 3bytes, when pixel format is RGB888 */
+        line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 3U);
+        break;
+    case LAYER_PPF_RGB565:
+    case LAYER_PPF_ARGB1555:
+    case LAYER_PPF_ARGB4444:
+    case LAYER_PPF_AL88:
+        /* each pixel includes 2bytes, when pixel format is RGB565,ARG1555,ARGB4444 or AL88 */
+        line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U) / 2U);
+        break;
+    case LAYER_PPF_L8:
+    case LAYER_PPF_AL44:
+        /* each pixel includes 1byte, when pixel format is L8 or AL44 */
+        line_length = (((TLI_LxFLLEN(layerx) & TLI_LxFLLEN_FLL) - 3U));
+        break;
+    default:
+        break;
     }
     /* reconfigure window position */
     TLI_LxHPOS(layerx) = (hstart | ((hstart + line_length - 1U) << 16U));
@@ -387,7 +383,6 @@ void tli_lut_struct_para_init(tli_layer_lut_parameter_struct *lut_struct)
 */
 void tli_lut_init(uint32_t layerx, tli_layer_lut_parameter_struct *lut_struct)
 {
-    TLI_LxLUT(layerx) &= ~(TLI_LxLUT_TB | TLI_LxLUT_TG | TLI_LxLUT_TR | TLI_LxLUT_TADD);
     TLI_LxLUT(layerx) = (uint32_t)(((uint32_t)lut_struct->layer_lut_channel_blue) | ((uint32_t)lut_struct->layer_lut_channel_green << 8U)
                                    | ((uint32_t)lut_struct->layer_lut_channel_red << 16U
                                       | ((uint32_t)lut_struct->layer_table_addr << 24U)));
@@ -543,9 +538,10 @@ FlagStatus tli_interrupt_flag_get(uint32_t int_flag)
 {
     uint32_t state;
     state = TLI_INTF;
-    if (state & int_flag) {
+    if(state & int_flag) {
         state = TLI_INTEN;
-        if (state & int_flag) {
+        /* check whether the corresponding bit in TLI_INTEN is set or not */
+        if(state & int_flag) {
             return SET;
         }
     }
@@ -587,12 +583,12 @@ FlagStatus tli_flag_get(uint32_t flag)
 {
     uint32_t stat;
     /* choose which register to get flag or state */
-    if (flag >> 31U) {
+    if(flag >> 31U) {
         stat = TLI_INTF;
     } else {
         stat = TLI_STAT;
     }
-    if (flag & stat) {
+    if(flag & stat) {
         return SET;
     } else {
         return RESET;
